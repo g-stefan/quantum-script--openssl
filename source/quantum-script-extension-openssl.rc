@@ -1,0 +1,15 @@
+//
+// Quantum Script Extension OpenSSL
+//
+// Copyright (c) 2020 Grigore Stefan <g_stefan@yahoo.com>
+// Created by Grigore Stefan <g_stefan@yahoo.com>
+//
+// MIT License (MIT) <http://opensource.org/licenses/MIT>
+//
+
+#include "xyo-application-version--os-windows-rc.hpp"
+#include "quantum-script-extension-openssl-version.hpp"
+#include "quantum-script-extension-openssl-copyright.hpp"
+
+XYO_APPLICATION_VERSION_INFO(QUANTUM_SCRIPT_EXTENSION_OPENSSL,"qse-openssl.dll","Quantum Script Extension OpenSSL")
+
