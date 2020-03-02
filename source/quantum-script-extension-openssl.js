@@ -10,6 +10,7 @@
 Script.requireExtension("Socket");
 Script.requireExtension("File");
 Script.requireExtension("URL");
+Script.requireExtension("JSON");
 
 OpenSSL.sslConnect = function(server) {
 	var fn = function(server) {
