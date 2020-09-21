@@ -22,5 +22,5 @@ cmdX file-to-cs --touch=source/quantum-script-extension-openssl-license.cpp --fi
 cmdX file-to-cs --touch=source/quantum-script-extension-openssl-license.cpp --file-in=source/license-dependency-libxml2.txt --file-out=source/license-dependency-libxml2.src --is-string-direct
 cmdX file-to-cs --touch=source/quantum-script-extension-openssl-license.cpp --file-in=source/license-dependency-libxslt.txt --file-out=source/license-dependency-libxslt.src --is-string-direct
 cmdX file-to-cs --touch=source/quantum-script-extension-openssl-license.cpp --file-in=source/license-dependency-openssl.txt --file-out=source/license-dependency-openssl.src --is-string-direct
-cmdX xyo-cc --mode=$ACTION @util/quantum-script-extension-openssl.static.compile.unix.info
-cmdX xyo-cc --mode=$ACTION @util/quantum-script-extension-openssl.dynamic.compile.info
+cmdX xyo-cc --mode=$ACTION @util/quantum-script-extension-openssl.static.compile.unix
+cmdX xyo-cc --mode=$ACTION @util/quantum-script-extension-openssl.dynamic.compile

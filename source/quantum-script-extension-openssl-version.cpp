@@ -15,10 +15,10 @@ namespace Quantum {
 			namespace OpenSSL {
 				namespace Version {
 
-					static const char *version_ = "1.0.0";
-					static const char *build_ = "3";
-					static const char *versionWithBuild_ = "1.0.0.3";
-					static const char *datetime_ = "2020-03-02 03:15:44";
+					static const char *version_ = "1.1.0";
+					static const char *build_ = "4";
+					static const char *versionWithBuild_ = "1.1.0.4";
+					static const char *datetime_ = "2020-09-21 17:40:11";
 
 					const char *version() {
 						return version_;

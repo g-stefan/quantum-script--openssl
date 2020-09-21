@@ -3,18 +3,15 @@
 # http://unlicense.org/
 # Created by Grigore Stefan <g_stefan@yahoo.com>
 
-if [ -f ../build.ubuntu.config.sh ]; then
-	. ../build.ubuntu.config.sh
+if [ -f ./port/build.ubuntu.config.sh ]; then
+	. ./port/build.ubuntu.config.sh
 fi
 
 RESTORE_PATH=$PATH
 RESTORE_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
 if [ "$XYO_PATH_REPOSITORY" = "" ]; then
-	PATH_REPOSITORY=../repository
-	if [ -f ../../sdk.build.ubuntu.sh ]; then
-		PATH_REPOSITORY=../../repository
-	fi
+	PATH_REPOSITORY=./repository
 	POPD=$PWD
 	[ -d $PATH_REPOSITORY ] || mkdir -p $PATH_REPOSITORY
 	cd $PATH_REPOSITORY
@@ -23,10 +20,7 @@ if [ "$XYO_PATH_REPOSITORY" = "" ]; then
 fi
 
 if [ "$XYO_PATH_RELEASE" = "" ]; then
-	PATH_RELEASE=../release
-	if [ -f ../../sdk.build.ubuntu.sh ]; then
-		PATH_RELEASE=../../release
-	fi
+	PATH_RELEASE=./release
 	POPD=$PWD
 	[ -d $PATH_RELEASE ] || mkdir -p $PATH_RELEASE
 	cd $PATH_RELEASE
@@ -52,12 +46,12 @@ export XYO_PATH_RELEASE
 RETV=0
 
 if [ "$1" = "" ]; then
-	. ./build.ubuntu.make.sh make
+	. ./port/build.ubuntu.make.sh make
 else
-	if [ -f "build.ubuntu.$1.sh" ]; then
-		. ./build.ubuntu.$1.sh
+	if [ -f "./port/build.ubuntu.$1.sh" ]; then
+		. ./port/build.ubuntu.$1.sh
 	else
-		. ./build.ubuntu.make.sh $1
+		. ./port/build.ubuntu.make.sh $1
 	fi
 fi
 
