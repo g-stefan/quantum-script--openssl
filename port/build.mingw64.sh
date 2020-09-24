@@ -3,8 +3,8 @@
 # http://unlicense.org/
 # Created by Grigore Stefan <g_stefan@yahoo.com>
 
-export XYO_PATH_REPOSITORY=$HOME/SDK/Repository
-export XYO_PATH_RELEASE=$HOME/SDK/Release
+export XYO_PATH_REPOSITORY=$HOME/SDK
+export XYO_PATH_RELEASE=$HOME/SDK/release
 export XYO_PATH_REPOSITORY_LIBRARY=
 
 /bin/sh -- ./port/build.ubuntu.sh $1
