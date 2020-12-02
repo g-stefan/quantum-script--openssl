@@ -6,6 +6,7 @@
 export XYO_PATH_REPOSITORY=$HOME/SDK
 export XYO_PATH_RELEASE=$HOME/SDK/release
 export XYO_PATH_REPOSITORY_LIBRARY=
+export PATH=$PATH:/c/msys64/mingw64/bin/../libexec;
 
 /bin/sh -- ./port/build.ubuntu.sh $1
 RETV=$?
