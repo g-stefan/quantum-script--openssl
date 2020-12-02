@@ -17,12 +17,14 @@ export XYO_PATH_REPOSITORY_LIBRARY=
 [ -d $WSL_BUILD_PROCESS_PATH/test ] || mkdir -p $WSL_BUILD_PROCESS_PATH/test
 [ -d $WSL_BUILD_PROCESS_PATH/util ] || mkdir -p $WSL_BUILD_PROCESS_PATH/util
 [ -d $WSL_BUILD_PROCESS_PATH/port ] || mkdir -p $WSL_BUILD_PROCESS_PATH/port
+[ -d $WSL_BUILD_PROCESS_PATH/release ] || mkdir -p $WSL_BUILD_PROCESS_PATH/release
 
 cp -rfu ./include/* $WSL_BUILD_PROCESS_PATH/include/
 cp -rfu ./source/* $WSL_BUILD_PROCESS_PATH/source/
 cp -rfu ./test/* $WSL_BUILD_PROCESS_PATH/test/
 cp -rfu ./util/* $WSL_BUILD_PROCESS_PATH/util/
 cp -rfu ./port/build.ubuntu*.sh $WSL_BUILD_PROCESS_PATH/port/
+cp -rfu ./release/*.csv $WSL_BUILD_PROCESS_PATH/release/
 
 WSL_POPD=$PWD
 cd $WSL_BUILD_PROCESS_PATH
@@ -44,10 +46,7 @@ fi
 if [ "$1" = "local-release" ]; then
 	[ -d ./release ] || mkdir -p ./release 
 	cp -rfu $WSL_BUILD_PROCESS_PATH/release/*.7z ./release/
-	for file in $WSL_BUILD_PROCESS_PATH/release/*.csv; do
-		cat $file >> ./release/$(basename "$file")
-		break
-	done
+	cp -rfu $WSL_BUILD_PROCESS_PATH/release/*.csv ./release/
 fi
 
 if [ "$RETV" = "1" ]; then
