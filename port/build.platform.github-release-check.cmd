@@ -5,7 +5,7 @@ rem Created by Grigore Stefan <g_stefan@yahoo.com>
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
-echo -^> git-release-check quantum-script-extension-openssl
+echo -^> github-release-check quantum-script-extension-openssl
 
 set PROJECT=quantum-script-extension-openssl
 if not exist source\%PROJECT%.version.ini echo Error - no version & exit 1
