@@ -43,7 +43,7 @@ if [ "$1" = "clean" ]; then
 	rm -rf $WSL_BUILD_PROCESS_PATH
 fi
 
-if [ "$1" = "local-release" ]; then
+if [ "$1" = "release" ]; then
 	[ -d ./release ] || mkdir -p ./release 
 	cp -rfu $WSL_BUILD_PROCESS_PATH/release/*.7z ./release/
 	cp -rfu $WSL_BUILD_PROCESS_PATH/release/*.csv ./release/
