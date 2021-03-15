@@ -1,0 +1,12 @@
+--dll qse-openssl
+--project-base=quantum-script-extension-openssl
+--build-include
+--dll-no-version
+--use-project=quantum-script
+--use-project=qse-buffer
+--use-project=qse-crypt
+--use-lib=libcrypto
+--use-lib=libssl
+--install-dev
+--install-inc=quantum-script-extension
+--no-version

@@ -1,0 +1,10 @@
+--lib qse-openssl
+--project-base=quantum-script-extension-openssl
+--build-include
+--use-project=quantum-script.static
+--use-project=qse-buffer.static
+--use-project=qse-crypt.static
+--use-lib=libcrypto.static
+--use-lib=libssl.static
+--install-dev
+--install-inc=quantum-script-extension

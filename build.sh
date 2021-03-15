@@ -4,8 +4,8 @@
 # Created by Grigore Stefan <g_stefan@yahoo.com>
 
 if ! [ "$1" = "" ]; then
-	if [ -f "./port/build.$1.sh" ]; then
-		. ./port/build.$1.sh $2
+	if [ -f "./build/$1.sh" ]; then
+		. ./build/$1.sh $2
 		RETV=$?
 		if [ "$RETV" = "1" ]; then
 			exit 1
@@ -27,6 +27,9 @@ if [ "$XYO_PLATFORM" = "mingw64" ]; then
 	DEFAULT_PLATFORM=mingw64
 fi
 if [ "$DEFAULT_PLATFORM" = "" ]; then
+	if [ "$(expr substr $(uname -s) 1 5)" = "Linux" ]; then
+                DEFAULT_PLATFORM=ubuntu
+        fi
 	if [ "$(expr substr $(uname -s) 1 10)" = "MINGW32_NT" ]; then
 		DEFAULT_PLATFORM=mingw32
 	fi
@@ -38,7 +41,7 @@ if [ "$DEFAULT_PLATFORM" = "" ]; then
 	echo "build [platform] [mode]"
 	exit 0
 fi	
-. ./port/build.$DEFAULT_PLATFORM.sh $1
+. ./build/$DEFAULT_PLATFORM.sh $1
 RETV=$?
 if [ "$RETV" = "1" ]; then
 	exit 1
