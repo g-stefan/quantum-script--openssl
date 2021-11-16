@@ -14,7 +14,7 @@ cmdX(){
 
 export XYO_PATH_RELEASE=release
 
-if xyo-cc quantum-script-extension-openssl --has-archived-release --version-file=version.ini; then
+if ! xyo-cc quantum-script-extension-openssl --has-archived-release --version-file=version.ini; then
 	exit 0
 fi
 cmdX /bin/sh ./build/ubuntu.sh make
