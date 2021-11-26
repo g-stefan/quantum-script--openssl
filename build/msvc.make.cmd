@@ -6,9 +6,9 @@ rem Created by Grigore Stefan <g_stefan@yahoo.com>
 set ACTION=%1
 if "%1" == "" set ACTION=make
 
-echo -^> %ACTION% quantum-script-extension-openssl
+echo - %BUILD_PROJECT% ^> %1
 
-goto StepX
+goto cmdXDefined
 :cmdX
 %*
 if errorlevel 1 goto cmdXError
@@ -16,7 +16,7 @@ goto :eof
 :cmdXError
 echo "Error: %ACTION%"
 exit 1
-:StepX
+:cmdXDefined
 
 call :cmdX file-to-cs --touch=source/quantum-script-extension-openssl.cpp --file-in=source/quantum-script-extension-openssl.js --file-out=source/quantum-script-extension-openssl.src --is-string --name=extensionOpenSSLSource
 call :cmdX file-to-cs --touch=source/quantum-script-extension-openssl-license.cpp --file-in=source/license-dependency-bzip2.txt --file-out=source/license-dependency-bzip2.src --is-string-direct
