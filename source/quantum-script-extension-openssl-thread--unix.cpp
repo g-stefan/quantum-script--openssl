@@ -11,15 +11,14 @@
 
 #ifdef XYO_OS_UNIX
 
-#include <pthread.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/crypto.h>
+#	include <pthread.h>
+#	include <unistd.h>
+#	include <stdio.h>
+#	include <openssl/ssl.h>
+#	include <openssl/err.h>
+#	include <openssl/crypto.h>
 
-#include "quantum-script-extension-openssl-thread.hpp"
-
+#	include "quantum-script-extension-openssl-thread.hpp"
 
 namespace Quantum {
 	namespace Script {
@@ -44,14 +43,13 @@ namespace Quantum {
 
 					initOk = false;
 
-					if(SSL_library_init() < 0) {
+					if (SSL_library_init() < 0) {
 						return;
 					};
 
 					ERR_load_BIO_strings();
 					ERR_load_crypto_strings();
 					SSL_load_error_strings();
-
 
 					threadLock = (pthread_mutex_t *)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
 					for (i = 0; i < CRYPTO_num_locks(); i++) {
@@ -63,7 +61,7 @@ namespace Quantum {
 				};
 
 				Lock_::~Lock_() {
-					if(initOk) {
+					if (initOk) {
 						int i;
 						CRYPTO_set_locking_callback(NULL);
 						for (i = 0; i < CRYPTO_num_locks(); i++) {
@@ -80,7 +78,6 @@ namespace Quantum {
 						pthread_mutex_unlock(&threadLock[type]);
 					};
 				};
-
 
 				bool threadLockInit() {
 					return (XYO::TSingletonProcess<Lock_>::getValue())->initOk;

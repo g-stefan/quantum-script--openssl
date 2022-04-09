@@ -24,7 +24,7 @@
 #include "quantum-script-extension-openssl-license.hpp"
 #include "quantum-script-extension-openssl.hpp"
 #ifndef QUANTUM_SCRIPT_EXTENSION_OPENSSL_NO_VERSION
-#include "quantum-script-extension-openssl-version.hpp"
+#	include "quantum-script-extension-openssl-version.hpp"
 #endif
 
 #include "quantum-script-variableresource.hpp"
@@ -104,12 +104,12 @@ namespace Quantum {
 
 					bio = BIO_new_ssl_connect((SSL_CTX *)(((VariableResource *)ctxSSL.value())->resource));
 					BIO_get_ssl(bio, &ssl);
-					if(!ssl) {
+					if (!ssl) {
 						BIO_free_all(bio);
 						return Context::getValueUndefined();
 					};
 					BIO_set_conn_hostname(bio, targetServer.value());
-					if(SSL_do_handshake(ssl) <= 0) {
+					if (SSL_do_handshake(ssl) <= 0) {
 						BIO_free_all(bio);
 						return Context::getValueUndefined();
 					};
@@ -129,13 +129,11 @@ namespace Quantum {
 					return Context::getValueUndefined();
 				};
 
-
-
 				static TPointer<Variable> bioRead(VariableFunction *function, Variable *this_, VariableArray *arguments) {
 #ifdef QUANTUM_SCRIPT_VM_DEBUG_RUNTIME
 					printf("- openssl-bio-read\n");
 #endif
-					String  retV(1024, 1024); // first 1024, next + 1024 bytes
+					String retV(1024, 1024); // first 1024, next + 1024 bytes
 					Number ln;
 					size_t readLn;
 					size_t readToLn;
@@ -147,33 +145,33 @@ namespace Quantum {
 					BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
 
 					ln = (arguments->index(1))->toNumber();
-					if(isnan(ln) || isinf(ln) || signbit(ln)) {
+					if (isnan(ln) || isinf(ln) || signbit(ln)) {
 						return Context::getValueUndefined();
 					};
 
 					readToLn = (size_t)(ln);
 					readTotal = 0;
 					readX = 1024;
-					if(readToLn < readX) {
+					if (readToLn < readX) {
 						readX = readToLn;
 					};
-					for(;;) {
+					for (;;) {
 						readLn = BIO_read(bio, buffer, readX);
 
-						if(readLn > 0) {
+						if (readLn > 0) {
 							retV.concatenate(buffer, readLn);
 						};
-						//end of file
-						if(readLn < readX) {
+						// end of file
+						if (readLn < readX) {
 							break;
 						};
-						//end of read
+						// end of read
 						readTotal += readLn;
-						if(readTotal >= readToLn) {
+						if (readTotal >= readToLn) {
 							break;
 						};
 						readX = readToLn - readTotal;
-						if(readX > 1024) {
+						if (readX > 1024) {
 							readX = 1024;
 						};
 					};
@@ -181,12 +179,11 @@ namespace Quantum {
 					return VariableString::newVariable(retV);
 				};
 
-
 				static TPointer<Variable> bioReadLn(VariableFunction *function, Variable *this_, VariableArray *arguments) {
 #ifdef QUANTUM_SCRIPT_VM_DEBUG_RUNTIME
 					printf("- openssl-bio-read-ln\n");
 #endif
-					String  retV(1024, 1024); // first 1024, next + 1024 bytes
+					String retV(1024, 1024); // first 1024, next + 1024 bytes
 					Number ln;
 					size_t readLn;
 					size_t readToLn;
@@ -199,28 +196,28 @@ namespace Quantum {
 					BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
 
 					ln = (arguments->index(1))->toNumber();
-					if(isnan(ln) || isinf(ln) || signbit(ln)) {
+					if (isnan(ln) || isinf(ln) || signbit(ln)) {
 						return Context::getValueUndefined();
 					};
 
 					readToLn = (size_t)(ln);
 					readTotal = 0;
-					if(readToLn < 1) {
+					if (readToLn < 1) {
 						return VariableString::newVariable("");
 					};
-					for(;;) {
+					for (;;) {
 						readLn = BIO_read(bio, buffer, 1);
-						if(readLn > 0) {
+						if (readLn > 0) {
 
-							if(buffer[0] == '\r') {
-								if(readTotal + 1 >= readToLn) {
+							if (buffer[0] == '\r') {
+								if (readTotal + 1 >= readToLn) {
 									retV.concatenate("\r", 1);
 									return VariableString::newVariable(retV);
 								};
 
 								readLn = BIO_read(bio, buffer, 1);
-								if(readLn > 0) {
-									if(buffer[0] == '\n') {
+								if (readLn > 0) {
+									if (buffer[0] == '\n') {
 										retV.concatenate("\r", 1);
 										retV.concatenate("\n", 1);
 										return VariableString::newVariable(retV);
@@ -228,29 +225,29 @@ namespace Quantum {
 									};
 									retV.concatenate(buffer, 1);
 									readTotal += 2;
-									if(readTotal >= readToLn) {
+									if (readTotal >= readToLn) {
 										return VariableString::newVariable(retV);
 									};
 									continue;
 								};
 
 								retV.concatenate("\r", 1);
-								//end of file
+								// end of file
 								return VariableString::newVariable(retV);
 							};
 
 							retV.concatenate(buffer, 1);
 							readTotal++;
-							if(readTotal >= readToLn) {
+							if (readTotal >= readToLn) {
 								return VariableString::newVariable(retV);
 							};
 							continue;
 						};
 						// connection interrupted - 0 to read ...
-						if(readTotal == 0) {
+						if (readTotal == 0) {
 							break;
 						};
-						//end of file
+						// end of file
 						return VariableString::newVariable(retV);
 					};
 
@@ -266,24 +263,20 @@ namespace Quantum {
 
 					String toWrite = (arguments->index(1))->toString();
 					return VariableNumber::newVariable((Number)(BIO_write(bio,
-									toWrite.value(), toWrite.length()
-								)));
+					                                                      toWrite.value(), toWrite.length())));
 				};
-
 
 				static TPointer<Variable> bioWriteLn(VariableFunction *function, Variable *this_, VariableArray *arguments) {
 #ifdef QUANTUM_SCRIPT_VM_DEBUG_RUNTIME
 					printf("- openssl-bio-write-ln\n");
 #endif
 
-
 					BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
 
 					String toWrite = (arguments->index(1))->toString();
 					toWrite << "\r\n";
 					return VariableNumber::newVariable((Number)(BIO_write(bio,
-									toWrite.value(), toWrite.length()
-								)));
+					                                                      toWrite.value(), toWrite.length())));
 				};
 
 				static TPointer<Variable> bioReadToBuffer(VariableFunction *function, Variable *this_, VariableArray *arguments) {
@@ -297,39 +290,38 @@ namespace Quantum {
 					size_t k;
 					Number ln;
 
-
 					BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
 
 					TPointerX<Variable> &buffer(arguments->index(1));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
 					ln = (arguments->index(2))->toNumber();
-					if(isnan(ln) || signbit(ln) || ln == 0.0) {
+					if (isnan(ln) || signbit(ln) || ln == 0.0) {
 						((VariableBuffer *)buffer.value())->buffer.length = 0;
 						return VariableNumber::newVariable(0);
 					};
-					if(isinf(ln)) {
+					if (isinf(ln)) {
 						ln = ((VariableBuffer *)buffer.value())->buffer.size;
 					};
 
-					if(ln > ((VariableBuffer *)buffer.value())->buffer.size) {
+					if (ln > ((VariableBuffer *)buffer.value())->buffer.size) {
 						ln = ((VariableBuffer *)buffer.value())->buffer.size;
 					};
 
 					readToLn = (size_t)ln;
 					readTotal = 0;
 					readX = readToLn;
-					for(;;) {
+					for (;;) {
 						readLn = BIO_read(bio, &(((VariableBuffer *)buffer.value())->buffer.buffer)[readTotal], readX);
-						//end of transmision
-						if(readLn == 0) {
+						// end of transmision
+						if (readLn == 0) {
 							break;
 						};
 						readTotal += readLn;
-						if(readTotal >= readToLn) {
+						if (readTotal >= readToLn) {
 							break;
 						};
 						readX = readToLn - readTotal;
@@ -347,15 +339,13 @@ namespace Quantum {
 
 					TPointerX<Variable> &buffer(arguments->index(1));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
 					return VariableNumber::newVariable((Number)(BIO_write(bio,
-									((VariableBuffer *)buffer.value())->buffer.buffer, ((VariableBuffer *)buffer.value())->buffer.length
-								)));
+					                                                      ((VariableBuffer *)buffer.value())->buffer.buffer, ((VariableBuffer *)buffer.value())->buffer.length)));
 				};
-
 
 				static TPointer<Variable> sha256Hash(VariableFunction *function, Variable *this_, VariableArray *arguments) {
 #ifdef QUANTUM_SCRIPT_VM_DEBUG_RUNTIME
@@ -367,35 +357,35 @@ namespace Quantum {
 					size_t bufferLn = (arguments->index(2))->toIndex();
 					TPointerX<Variable> &outHash(arguments->index(3));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
-					if(!TIsType<VariableBuffer>(outHash)) {
+					if (!TIsType<VariableBuffer>(outHash)) {
 						throw(Error("invalid parameter"));
 					};
 
-					if(bufferLn == 0) {
+					if (bufferLn == 0) {
 						return VariableBoolean::newVariable(false);
 					};
 
-					if(bufferStart + bufferLn > ((VariableBuffer *)buffer.value())->buffer.length) {
+					if (bufferStart + bufferLn > ((VariableBuffer *)buffer.value())->buffer.length) {
 						return VariableBoolean::newVariable(false);
 					};
 
-					if(((VariableBuffer *)outHash.value())->buffer.size < SHA256_DIGEST_LENGTH) {
+					if (((VariableBuffer *)outHash.value())->buffer.size < SHA256_DIGEST_LENGTH) {
 						((VariableBuffer *)outHash.value())->resize(SHA256_DIGEST_LENGTH);
 					};
 
 					SHA256_CTX sha256;
 
-					if(SHA256_Init(&sha256) == 0) {
+					if (SHA256_Init(&sha256) == 0) {
 						return VariableBoolean::newVariable(false);
 					};
-					if(SHA256_Update(&sha256, &((VariableBuffer *)buffer.value())->buffer.buffer[bufferStart], bufferLn) == 0) {
+					if (SHA256_Update(&sha256, &((VariableBuffer *)buffer.value())->buffer.buffer[bufferStart], bufferLn) == 0) {
 						return VariableBoolean::newVariable(false);
 					};
-					if(SHA256_Final(((VariableBuffer *)outHash.value())->buffer.buffer, &sha256) == 0) {
+					if (SHA256_Final(((VariableBuffer *)outHash.value())->buffer.buffer, &sha256) == 0) {
 						return VariableBoolean::newVariable(false);
 					};
 
@@ -403,7 +393,6 @@ namespace Quantum {
 
 					return VariableBoolean::newVariable(true);
 				};
-
 
 				static TPointer<Variable> sha512Hash(VariableFunction *function, Variable *this_, VariableArray *arguments) {
 #ifdef QUANTUM_SCRIPT_VM_DEBUG_RUNTIME
@@ -415,35 +404,35 @@ namespace Quantum {
 					size_t bufferLn = (arguments->index(2))->toIndex();
 					TPointerX<Variable> &outHash(arguments->index(3));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
-					if(!TIsType<VariableBuffer>(outHash)) {
+					if (!TIsType<VariableBuffer>(outHash)) {
 						throw(Error("invalid parameter"));
 					};
 
-					if(bufferLn == 0) {
+					if (bufferLn == 0) {
 						return VariableBoolean::newVariable(false);
 					};
 
-					if(bufferStart + bufferLn > ((VariableBuffer *)buffer.value())->buffer.length) {
+					if (bufferStart + bufferLn > ((VariableBuffer *)buffer.value())->buffer.length) {
 						return VariableBoolean::newVariable(false);
 					};
 
-					if(((VariableBuffer *)outHash.value())->buffer.size < SHA512_DIGEST_LENGTH) {
+					if (((VariableBuffer *)outHash.value())->buffer.size < SHA512_DIGEST_LENGTH) {
 						((VariableBuffer *)outHash.value())->resize(SHA512_DIGEST_LENGTH);
 					};
 
 					SHA512_CTX sha512;
 
-					if(SHA512_Init(&sha512) == 0) {
+					if (SHA512_Init(&sha512) == 0) {
 						return VariableBoolean::newVariable(false);
 					};
-					if(SHA512_Update(&sha512, &((VariableBuffer *)buffer.value())->buffer.buffer[bufferStart], bufferLn) == 0) {
+					if (SHA512_Update(&sha512, &((VariableBuffer *)buffer.value())->buffer.buffer[bufferStart], bufferLn) == 0) {
 						return VariableBoolean::newVariable(false);
 					};
-					if(SHA512_Final(((VariableBuffer *)outHash.value())->buffer.buffer, &sha512) == 0) {
+					if (SHA512_Final(((VariableBuffer *)outHash.value())->buffer.buffer, &sha512) == 0) {
 						return VariableBoolean::newVariable(false);
 					};
 
@@ -467,21 +456,21 @@ namespace Quantum {
 
 					TPointerX<Variable> &buffer(arguments->index(0));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
 					RSA *rsa = nullptr;
 					BIO *bio;
 					bio = BIO_new_mem_buf(((VariableBuffer *)buffer.value())->buffer.buffer, ((VariableBuffer *)buffer.value())->buffer.length);
-					if(bio == nullptr) {
+					if (bio == nullptr) {
 						return VariableNull::newVariable();
 					};
 					rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, nullptr, nullptr);
 
 					BIO_free_all(bio);
 
-					if(rsa == nullptr) {
+					if (rsa == nullptr) {
 						return VariableNull::newVariable();
 					};
 
@@ -493,24 +482,23 @@ namespace Quantum {
 					printf("- openssl-rsa-private-key\n");
 #endif
 
-
 					TPointerX<Variable> &buffer(arguments->index(0));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
 					RSA *rsa = nullptr;
 					BIO *bio;
 					bio = BIO_new_mem_buf(((VariableBuffer *)buffer.value())->buffer.buffer, ((VariableBuffer *)buffer.value())->buffer.length);
-					if(bio == nullptr) {
+					if (bio == nullptr) {
 						return VariableNull::newVariable();
 					};
 					rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, nullptr, nullptr);
 
 					BIO_free_all(bio);
 
-					if(rsa == nullptr) {
+					if (rsa == nullptr) {
 						return VariableNull::newVariable();
 					};
 
@@ -526,31 +514,31 @@ namespace Quantum {
 					TPointerX<Variable> &buffer(arguments->index(1));
 					TPointerX<Variable> &outBuffer(arguments->index(2));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
-					if(!TIsType<VariableBuffer>(outBuffer)) {
+					if (!TIsType<VariableBuffer>(outBuffer)) {
 						throw(Error("invalid parameter"));
 					};
 
 					size_t outputSize = RSA_size(rsa);
 
-					if(((VariableBuffer *)outBuffer.value())->buffer.size < outputSize) {
+					if (((VariableBuffer *)outBuffer.value())->buffer.size < outputSize) {
 						((VariableBuffer *)outBuffer.value())->resize(outputSize);
 					};
 
-					if(((VariableBuffer *)buffer.value())->buffer.length == 0) {
+					if (((VariableBuffer *)buffer.value())->buffer.length == 0) {
 						throw(Error("invalid length"));
 					};
 
 					memset(((VariableBuffer *)outBuffer.value())->buffer.buffer, 0, ((VariableBuffer *)outBuffer.value())->buffer.size);
 
-					if(RSA_public_encrypt(
-							((VariableBuffer *)buffer.value())->buffer.length,
-							((VariableBuffer *)buffer.value())->buffer.buffer,
-							((VariableBuffer *)outBuffer.value())->buffer.buffer,
-							rsa, RSA_PKCS1_PADDING) == outputSize) {
+					if (RSA_public_encrypt(
+					        ((VariableBuffer *)buffer.value())->buffer.length,
+					        ((VariableBuffer *)buffer.value())->buffer.buffer,
+					        ((VariableBuffer *)outBuffer.value())->buffer.buffer,
+					        rsa, RSA_PKCS1_PADDING) == outputSize) {
 						((VariableBuffer *)outBuffer.value())->buffer.length = outputSize;
 						return VariableBoolean::newVariable(true);
 					};
@@ -569,33 +557,33 @@ namespace Quantum {
 					TPointerX<Variable> &buffer(arguments->index(1));
 					TPointerX<Variable> &outBuffer(arguments->index(2));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
-					if(!TIsType<VariableBuffer>(outBuffer)) {
+					if (!TIsType<VariableBuffer>(outBuffer)) {
 						throw(Error("invalid parameter"));
 					};
 
 					size_t outputSize = RSA_size(rsa);
 
-					if(((VariableBuffer *)outBuffer.value())->buffer.size < outputSize) {
+					if (((VariableBuffer *)outBuffer.value())->buffer.size < outputSize) {
 						((VariableBuffer *)outBuffer.value())->resize(outputSize);
 					};
 
-					if(((VariableBuffer *)buffer.value())->buffer.length == 0) {
+					if (((VariableBuffer *)buffer.value())->buffer.length == 0) {
 						throw(Error("invalid length"));
 					};
 
 					memset(((VariableBuffer *)outBuffer.value())->buffer.buffer, 0, ((VariableBuffer *)outBuffer.value())->buffer.size);
 
 					int newLn = RSA_public_decrypt(
-							((VariableBuffer *)buffer.value())->buffer.length,
-							((VariableBuffer *)buffer.value())->buffer.buffer,
-							((VariableBuffer *)outBuffer.value())->buffer.buffer,
-							rsa, RSA_PKCS1_PADDING);
+					    ((VariableBuffer *)buffer.value())->buffer.length,
+					    ((VariableBuffer *)buffer.value())->buffer.buffer,
+					    ((VariableBuffer *)outBuffer.value())->buffer.buffer,
+					    rsa, RSA_PKCS1_PADDING);
 
-					if(newLn > 0) {
+					if (newLn > 0) {
 						((VariableBuffer *)outBuffer.value())->buffer.length = newLn;
 						return VariableBoolean::newVariable(true);
 					};
@@ -603,7 +591,6 @@ namespace Quantum {
 					memset(((VariableBuffer *)outBuffer.value())->buffer.buffer, 0, ((VariableBuffer *)outBuffer.value())->buffer.size);
 					((VariableBuffer *)outBuffer.value())->buffer.length = 0;
 					return VariableBoolean::newVariable(false);
-
 				};
 
 				static TPointer<Variable> rsaPrivateEncrypt(VariableFunction *function, Variable *this_, VariableArray *arguments) {
@@ -615,31 +602,31 @@ namespace Quantum {
 					TPointerX<Variable> &buffer(arguments->index(1));
 					TPointerX<Variable> &outBuffer(arguments->index(2));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
-					if(!TIsType<VariableBuffer>(outBuffer)) {
+					if (!TIsType<VariableBuffer>(outBuffer)) {
 						throw(Error("invalid parameter"));
 					};
 
 					size_t outputSize = RSA_size(rsa);
 
-					if(((VariableBuffer *)outBuffer.value())->buffer.size < outputSize) {
+					if (((VariableBuffer *)outBuffer.value())->buffer.size < outputSize) {
 						((VariableBuffer *)outBuffer.value())->resize(outputSize);
 					};
 
-					if(((VariableBuffer *)buffer.value())->buffer.length == 0) {
+					if (((VariableBuffer *)buffer.value())->buffer.length == 0) {
 						throw(Error("invalid length"));
 					};
 
 					memset(((VariableBuffer *)outBuffer.value())->buffer.buffer, 0, ((VariableBuffer *)outBuffer.value())->buffer.size);
 
-					if(RSA_private_encrypt(
-							((VariableBuffer *)buffer.value())->buffer.length,
-							((VariableBuffer *)buffer.value())->buffer.buffer,
-							((VariableBuffer *)outBuffer.value())->buffer.buffer,
-							rsa, RSA_PKCS1_PADDING) == outputSize) {
+					if (RSA_private_encrypt(
+					        ((VariableBuffer *)buffer.value())->buffer.length,
+					        ((VariableBuffer *)buffer.value())->buffer.buffer,
+					        ((VariableBuffer *)outBuffer.value())->buffer.buffer,
+					        rsa, RSA_PKCS1_PADDING) == outputSize) {
 						((VariableBuffer *)outBuffer.value())->buffer.length = outputSize;
 						return VariableBoolean::newVariable(true);
 					};
@@ -657,33 +644,33 @@ namespace Quantum {
 					TPointerX<Variable> &buffer(arguments->index(1));
 					TPointerX<Variable> &outBuffer(arguments->index(2));
 
-					if(!TIsType<VariableBuffer>(buffer)) {
+					if (!TIsType<VariableBuffer>(buffer)) {
 						throw(Error("invalid parameter"));
 					};
 
-					if(!TIsType<VariableBuffer>(outBuffer)) {
+					if (!TIsType<VariableBuffer>(outBuffer)) {
 						throw(Error("invalid parameter"));
 					};
 
 					size_t outputSize = RSA_size(rsa);
 
-					if(((VariableBuffer *)outBuffer.value())->buffer.size < outputSize) {
+					if (((VariableBuffer *)outBuffer.value())->buffer.size < outputSize) {
 						((VariableBuffer *)outBuffer.value())->resize(outputSize);
 					};
 
-					if(((VariableBuffer *)buffer.value())->buffer.length == 0) {
+					if (((VariableBuffer *)buffer.value())->buffer.length == 0) {
 						throw(Error("invalid length"));
 					};
 
 					memset(((VariableBuffer *)outBuffer.value())->buffer.buffer, 0, ((VariableBuffer *)outBuffer.value())->buffer.size);
 
 					int newLn = RSA_private_decrypt(
-							((VariableBuffer *)buffer.value())->buffer.length,
-							((VariableBuffer *)buffer.value())->buffer.buffer,
-							((VariableBuffer *)outBuffer.value())->buffer.buffer,
-							rsa, RSA_PKCS1_PADDING);
+					    ((VariableBuffer *)buffer.value())->buffer.length,
+					    ((VariableBuffer *)buffer.value())->buffer.buffer,
+					    ((VariableBuffer *)outBuffer.value())->buffer.buffer,
+					    rsa, RSA_PKCS1_PADDING);
 
-					if(newLn > 0) {
+					if (newLn > 0) {
 						((VariableBuffer *)outBuffer.value())->buffer.length = newLn;
 						return VariableBoolean::newVariable(true);
 					};
@@ -705,26 +692,26 @@ namespace Quantum {
 					const uint8_t *data = nullptr;
 					size_t dataSize = 0;
 
-					if(TIsType<VariableString>(passwordV)) {
+					if (TIsType<VariableString>(passwordV)) {
 						password = (const uint8_t *)(((VariableString *)passwordV.value())->value.value());
 						passwordSize = ((VariableString *)passwordV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(passwordV)) {
+					} else if (TIsType<VariableBuffer>(passwordV)) {
 						password = (const uint8_t *)(((VariableBuffer *)passwordV.value())->buffer.buffer);
 						passwordSize = ((VariableBuffer *)passwordV.value())->buffer.length;
 					};
 
-					if(TIsType<VariableString>(dataV)) {
+					if (TIsType<VariableString>(dataV)) {
 						data = (const uint8_t *)(((VariableString *)dataV.value())->value.value());
 						dataSize = ((VariableString *)dataV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(dataV)) {
+					} else if (TIsType<VariableBuffer>(dataV)) {
 						data = (const uint8_t *)(((VariableBuffer *)dataV.value())->buffer.buffer);
 						dataSize = ((VariableBuffer *)dataV.value())->buffer.length;
 					};
 
-					if(password != nullptr) {
-						if(data != nullptr) {
+					if (password != nullptr) {
+						if (data != nullptr) {
 							XYO::Buffer output;
-							if(privateEncrypt(password, passwordSize, data, dataSize, output)) {
+							if (privateEncrypt(password, passwordSize, data, dataSize, output)) {
 								return VariableBuffer::newVariable(output.buffer, output.length);
 							};
 						};
@@ -745,26 +732,26 @@ namespace Quantum {
 					const uint8_t *data = nullptr;
 					size_t dataSize = 0;
 
-					if(TIsType<VariableString>(passwordV)) {
+					if (TIsType<VariableString>(passwordV)) {
 						password = (const uint8_t *)(((VariableString *)passwordV.value())->value.value());
 						passwordSize = ((VariableString *)passwordV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(passwordV)) {
+					} else if (TIsType<VariableBuffer>(passwordV)) {
 						password = (const uint8_t *)(((VariableBuffer *)passwordV.value())->buffer.buffer);
 						passwordSize = ((VariableBuffer *)passwordV.value())->buffer.length;
 					};
 
-					if(TIsType<VariableString>(dataV)) {
+					if (TIsType<VariableString>(dataV)) {
 						data = (const uint8_t *)(((VariableString *)dataV.value())->value.value());
 						dataSize = ((VariableString *)dataV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(dataV)) {
+					} else if (TIsType<VariableBuffer>(dataV)) {
 						data = (const uint8_t *)(((VariableBuffer *)dataV.value())->buffer.buffer);
 						dataSize = ((VariableBuffer *)dataV.value())->buffer.length;
 					};
 
-					if(password != nullptr) {
-						if(data != nullptr) {
+					if (password != nullptr) {
+						if (data != nullptr) {
 							XYO::Buffer output;
-							if(privateDecrypt(password, passwordSize, data, dataSize, output)) {
+							if (privateDecrypt(password, passwordSize, data, dataSize, output)) {
 								return VariableBuffer::newVariable(output.buffer, output.length);
 							};
 						};
@@ -785,26 +772,26 @@ namespace Quantum {
 					const uint8_t *data = nullptr;
 					size_t dataSize = 0;
 
-					if(TIsType<VariableString>(passwordV)) {
+					if (TIsType<VariableString>(passwordV)) {
 						password = (const uint8_t *)(((VariableString *)passwordV.value())->value.value());
 						passwordSize = ((VariableString *)passwordV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(passwordV)) {
+					} else if (TIsType<VariableBuffer>(passwordV)) {
 						password = (const uint8_t *)(((VariableBuffer *)passwordV.value())->buffer.buffer);
 						passwordSize = ((VariableBuffer *)passwordV.value())->buffer.length;
 					};
 
-					if(TIsType<VariableString>(dataV)) {
+					if (TIsType<VariableString>(dataV)) {
 						data = (const uint8_t *)(((VariableString *)dataV.value())->value.value());
 						dataSize = ((VariableString *)dataV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(dataV)) {
+					} else if (TIsType<VariableBuffer>(dataV)) {
 						data = (const uint8_t *)(((VariableBuffer *)dataV.value())->buffer.buffer);
 						dataSize = ((VariableBuffer *)dataV.value())->buffer.length;
 					};
 
-					if(password != nullptr) {
-						if(data != nullptr) {
+					if (password != nullptr) {
+						if (data != nullptr) {
 							XYO::Buffer output;
-							if(publicEncrypt(password, passwordSize, data, dataSize, output)) {
+							if (publicEncrypt(password, passwordSize, data, dataSize, output)) {
 								return VariableBuffer::newVariable(output.buffer, output.length);
 							};
 						};
@@ -825,26 +812,26 @@ namespace Quantum {
 					const uint8_t *data = nullptr;
 					size_t dataSize = 0;
 
-					if(TIsType<VariableString>(passwordV)) {
+					if (TIsType<VariableString>(passwordV)) {
 						password = (const uint8_t *)(((VariableString *)passwordV.value())->value.value());
 						passwordSize = ((VariableString *)passwordV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(passwordV)) {
+					} else if (TIsType<VariableBuffer>(passwordV)) {
 						password = (const uint8_t *)(((VariableBuffer *)passwordV.value())->buffer.buffer);
 						passwordSize = ((VariableBuffer *)passwordV.value())->buffer.length;
 					};
 
-					if(TIsType<VariableString>(dataV)) {
+					if (TIsType<VariableString>(dataV)) {
 						data = (const uint8_t *)(((VariableString *)dataV.value())->value.value());
 						dataSize = ((VariableString *)dataV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(dataV)) {
+					} else if (TIsType<VariableBuffer>(dataV)) {
 						data = (const uint8_t *)(((VariableBuffer *)dataV.value())->buffer.buffer);
 						dataSize = ((VariableBuffer *)dataV.value())->buffer.length;
 					};
 
-					if(password != nullptr) {
-						if(data != nullptr) {
+					if (password != nullptr) {
+						if (data != nullptr) {
 							XYO::Buffer output;
-							if(publicDecrypt(password, passwordSize, data, dataSize, output)) {
+							if (publicDecrypt(password, passwordSize, data, dataSize, output)) {
 								return VariableBuffer::newVariable(output.buffer, output.length);
 							};
 						};
@@ -864,15 +851,15 @@ namespace Quantum {
 					const uint8_t *password = nullptr;
 					size_t passwordSize = 0;
 
-					if(TIsType<VariableString>(passwordV)) {
+					if (TIsType<VariableString>(passwordV)) {
 						password = (const uint8_t *)(((VariableString *)passwordV.value())->value.value());
 						passwordSize = ((VariableString *)passwordV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(passwordV)) {
+					} else if (TIsType<VariableBuffer>(passwordV)) {
 						password = (const uint8_t *)(((VariableBuffer *)passwordV.value())->buffer.buffer);
 						passwordSize = ((VariableBuffer *)passwordV.value())->buffer.length;
 					};
 
-					if(password != nullptr) {
+					if (password != nullptr) {
 						return VariableBoolean::newVariable(privateEncryptFile(password, passwordSize, fileIn, fileOut));
 					};
 
@@ -890,15 +877,15 @@ namespace Quantum {
 					const uint8_t *password = nullptr;
 					size_t passwordSize = 0;
 
-					if(TIsType<VariableString>(passwordV)) {
+					if (TIsType<VariableString>(passwordV)) {
 						password = (const uint8_t *)(((VariableString *)passwordV.value())->value.value());
 						passwordSize = ((VariableString *)passwordV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(passwordV)) {
+					} else if (TIsType<VariableBuffer>(passwordV)) {
 						password = (const uint8_t *)(((VariableBuffer *)passwordV.value())->buffer.buffer);
 						passwordSize = ((VariableBuffer *)passwordV.value())->buffer.length;
 					};
 
-					if(password != nullptr) {
+					if (password != nullptr) {
 						return VariableBoolean::newVariable(privateDecryptFile(password, passwordSize, fileIn, fileOut));
 					};
 
@@ -916,15 +903,15 @@ namespace Quantum {
 					const uint8_t *password = nullptr;
 					size_t passwordSize = 0;
 
-					if(TIsType<VariableString>(passwordV)) {
+					if (TIsType<VariableString>(passwordV)) {
 						password = (const uint8_t *)(((VariableString *)passwordV.value())->value.value());
 						passwordSize = ((VariableString *)passwordV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(passwordV)) {
+					} else if (TIsType<VariableBuffer>(passwordV)) {
 						password = (const uint8_t *)(((VariableBuffer *)passwordV.value())->buffer.buffer);
 						passwordSize = ((VariableBuffer *)passwordV.value())->buffer.length;
 					};
 
-					if(password != nullptr) {
+					if (password != nullptr) {
 						return VariableBoolean::newVariable(publicEncryptFile(password, passwordSize, fileIn, fileOut));
 					};
 
@@ -942,21 +929,20 @@ namespace Quantum {
 					const uint8_t *password = nullptr;
 					size_t passwordSize = 0;
 
-					if(TIsType<VariableString>(passwordV)) {
+					if (TIsType<VariableString>(passwordV)) {
 						password = (const uint8_t *)(((VariableString *)passwordV.value())->value.value());
 						passwordSize = ((VariableString *)passwordV.value())->value.length();
-					} else if(TIsType<VariableBuffer>(passwordV)) {
+					} else if (TIsType<VariableBuffer>(passwordV)) {
 						password = (const uint8_t *)(((VariableBuffer *)passwordV.value())->buffer.buffer);
 						passwordSize = ((VariableBuffer *)passwordV.value())->buffer.length;
 					};
 
-					if(password != nullptr) {
+					if (password != nullptr) {
 						return VariableBoolean::newVariable(publicDecryptFile(password, passwordSize, fileIn, fileOut));
 					};
 
 					return Context::getValueUndefined();
 				};
-
 
 				void registerInternalExtension(Executive *executive) {
 					executive->registerInternalExtension("OpenSSL", initExecutive);
@@ -973,7 +959,7 @@ namespace Quantum {
 #endif
 					executive->setExtensionPublic(extensionId, true);
 
-					if(!threadLockInit()) {
+					if (!threadLockInit()) {
 						throw Error("OpenSSL initialization");
 					};
 
@@ -1016,12 +1002,12 @@ namespace Quantum {
 				bool privateEncrypt(const uint8_t *privateKey, size_t privateKeySize, const uint8_t *data, size_t dataSize, XYO::Buffer &output) {
 					RSA *rsa = nullptr;
 					BIO *bio = BIO_new_mem_buf(const_cast<uint8_t *>(privateKey), privateKeySize);
-					if(bio != nullptr) {
+					if (bio != nullptr) {
 						rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, nullptr, nullptr);
 						BIO_free_all(bio);
-						if(rsa != nullptr) {
+						if (rsa != nullptr) {
 							size_t rsaSize = RSA_size(rsa);
-							if(rsaSize < 64) {
+							if (rsaSize < 64) {
 								RSA_free((RSA *)rsa);
 								return false;
 							};
@@ -1039,11 +1025,11 @@ namespace Quantum {
 							randomSalt.processDone();
 							randomSalt.toU8(randomKey);
 
-							if(RSA_private_encrypt(
-									64,
-									randomKey,
-									rsaKey.buffer,
-									rsa, RSA_PKCS1_PADDING) == rsaKey.size) {
+							if (RSA_private_encrypt(
+							        64,
+							        randomKey,
+							        rsaKey.buffer,
+							        rsa, RSA_PKCS1_PADDING) == rsaKey.size) {
 
 								rsaKey.length = rsaKey.size;
 								RSA_free((RSA *)rsa);
@@ -1058,7 +1044,6 @@ namespace Quantum {
 								return true;
 							};
 
-
 							RSA_free((RSA *)rsa);
 						};
 					};
@@ -1069,16 +1054,16 @@ namespace Quantum {
 				bool privateDecrypt(const uint8_t *privateKey, size_t privateKeySize, const uint8_t *data, size_t dataSize, XYO::Buffer &output) {
 					RSA *rsa = nullptr;
 					BIO *bio = BIO_new_mem_buf(const_cast<uint8_t *>(privateKey), privateKeySize);
-					if(bio != nullptr) {
+					if (bio != nullptr) {
 						rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, nullptr, nullptr);
 						BIO_free_all(bio);
-						if(rsa != nullptr) {
+						if (rsa != nullptr) {
 							size_t rsaSize = RSA_size(rsa);
-							if(rsaSize < 64) {
+							if (rsaSize < 64) {
 								RSA_free((RSA *)rsa);
 								return false;
 							};
-							if(dataSize < rsaSize + 64 + 64 + 8) {
+							if (dataSize < rsaSize + 64 + 64 + 8) {
 								return false;
 							};
 
@@ -1086,14 +1071,14 @@ namespace Quantum {
 							randomKey.setSize(rsaSize);
 
 							int newLn = RSA_private_decrypt(
-									rsaSize,
-									data,
-									randomKey.buffer,
-									rsa, RSA_PKCS1_PADDING);
+							    rsaSize,
+							    data,
+							    randomKey.buffer,
+							    rsa, RSA_PKCS1_PADDING);
 
 							RSA_free((RSA *)rsa);
 
-							if(newLn != 64) {
+							if (newLn != 64) {
 								return false;
 							};
 
@@ -1107,12 +1092,12 @@ namespace Quantum {
 				bool publicEncrypt(const uint8_t *publicKey, size_t publicKeySize, const uint8_t *data, size_t dataSize, XYO::Buffer &output) {
 					RSA *rsa = nullptr;
 					BIO *bio = BIO_new_mem_buf(const_cast<uint8_t *>(publicKey), publicKeySize);
-					if(bio != nullptr) {
+					if (bio != nullptr) {
 						rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, nullptr, nullptr);
 						BIO_free_all(bio);
-						if(rsa != nullptr) {
+						if (rsa != nullptr) {
 							size_t rsaSize = RSA_size(rsa);
-							if(rsaSize < 64) {
+							if (rsaSize < 64) {
 								RSA_free((RSA *)rsa);
 								return false;
 							};
@@ -1130,11 +1115,11 @@ namespace Quantum {
 							randomSalt.processDone();
 							randomSalt.toU8(randomKey);
 
-							if(RSA_public_encrypt(
-									64,
-									randomKey,
-									rsaKey.buffer,
-									rsa, RSA_PKCS1_PADDING) == rsaKey.size) {
+							if (RSA_public_encrypt(
+							        64,
+							        randomKey,
+							        rsaKey.buffer,
+							        rsa, RSA_PKCS1_PADDING) == rsaKey.size) {
 
 								rsaKey.length = rsaKey.size;
 								RSA_free((RSA *)rsa);
@@ -1149,7 +1134,6 @@ namespace Quantum {
 								return true;
 							};
 
-
 							RSA_free((RSA *)rsa);
 						};
 					};
@@ -1160,16 +1144,16 @@ namespace Quantum {
 				bool publicDecrypt(const uint8_t *publicKey, size_t publicKeySize, const uint8_t *data, size_t dataSize, XYO::Buffer &output) {
 					RSA *rsa = nullptr;
 					BIO *bio = BIO_new_mem_buf(const_cast<uint8_t *>(publicKey), publicKeySize);
-					if(bio != nullptr) {
+					if (bio != nullptr) {
 						rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, nullptr, nullptr);
 						BIO_free_all(bio);
-						if(rsa != nullptr) {
+						if (rsa != nullptr) {
 							size_t rsaSize = RSA_size(rsa);
-							if(rsaSize < 64) {
+							if (rsaSize < 64) {
 								RSA_free((RSA *)rsa);
 								return false;
 							};
-							if(dataSize < rsaSize + 64 + 64 + 8) {
+							if (dataSize < rsaSize + 64 + 64 + 8) {
 								return false;
 							};
 
@@ -1177,14 +1161,14 @@ namespace Quantum {
 							randomKey.setSize(rsaSize);
 
 							int newLn = RSA_public_decrypt(
-									rsaSize,
-									data,
-									randomKey.buffer,
-									rsa, RSA_PKCS1_PADDING);
+							    rsaSize,
+							    data,
+							    randomKey.buffer,
+							    rsa, RSA_PKCS1_PADDING);
 
 							RSA_free((RSA *)rsa);
 
-							if(newLn != 64) {
+							if (newLn != 64) {
 								return false;
 							};
 
@@ -1197,7 +1181,7 @@ namespace Quantum {
 
 				bool privateEncryptFile(const uint8_t *privateKey, size_t privateKeySize, const char *fileNameIn, const char *fileNameOut) {
 					XYO::Buffer fileContents;
-					if(Shell::fileGetContents(fileNameIn, fileContents)) {
+					if (Shell::fileGetContents(fileNameIn, fileContents)) {
 						XYO::Buffer output;
 						privateEncrypt(privateKey, privateKeySize, fileContents.buffer, fileContents.length, output);
 						return Shell::filePutContents(fileNameOut, output);
@@ -1207,9 +1191,9 @@ namespace Quantum {
 
 				bool privateDecryptFile(const uint8_t *privateKey, size_t privateKeySize, const char *fileNameIn, const char *fileNameOut) {
 					XYO::Buffer fileContents;
-					if(Shell::fileGetContents(fileNameIn, fileContents)) {
+					if (Shell::fileGetContents(fileNameIn, fileContents)) {
 						XYO::Buffer output;
-						if(privateDecrypt(privateKey, privateKeySize, fileContents.buffer, fileContents.length, output)) {
+						if (privateDecrypt(privateKey, privateKeySize, fileContents.buffer, fileContents.length, output)) {
 							return Shell::filePutContents(fileNameOut, output);
 						};
 					};
@@ -1218,7 +1202,7 @@ namespace Quantum {
 
 				bool publicEncryptFile(const uint8_t *publicKey, size_t publicKeySize, const char *fileNameIn, const char *fileNameOut) {
 					XYO::Buffer fileContents;
-					if(Shell::fileGetContents(fileNameIn, fileContents)) {
+					if (Shell::fileGetContents(fileNameIn, fileContents)) {
 						XYO::Buffer output;
 						publicEncrypt(publicKey, publicKeySize, fileContents.buffer, fileContents.length, output);
 						return Shell::filePutContents(fileNameOut, output);
@@ -1228,9 +1212,9 @@ namespace Quantum {
 
 				bool publicDecryptFile(const uint8_t *publicKey, size_t publicKeySize, const char *fileNameIn, const char *fileNameOut) {
 					XYO::Buffer fileContents;
-					if(Shell::fileGetContents(fileNameIn, fileContents)) {
+					if (Shell::fileGetContents(fileNameIn, fileContents)) {
 						XYO::Buffer output;
-						if(publicDecrypt(publicKey, publicKeySize, fileContents.buffer, fileContents.length, output)) {
+						if (publicDecrypt(publicKey, publicKeySize, fileContents.buffer, fileContents.length, output)) {
 							return Shell::filePutContents(fileNameOut, output);
 						};
 					};
