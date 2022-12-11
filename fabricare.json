@@ -1,0 +1,21 @@
+{
+	"project": {
+		"name":"quantum-script--openssl",
+		"type":"xyo-cpp",
+		"make" : "lib-and-dll",
+		"SPDX-License-Identifier": "MIT",
+		"sourcePath" : "XYO/QuantumScript.Extension/OpenSSL",
+		"dependency" : [
+			"quantum-script",
+			"quantum-script--console",
+			"quantum-script--buffer",
+			"quantum-script--crypt",
+			"xyo-cryptography",
+			"bzip2",
+			"libxml2",
+			"libxslt",
+			"libcrypto",
+			"libssl"
+		]
+	}
+}
