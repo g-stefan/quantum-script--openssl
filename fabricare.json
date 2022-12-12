@@ -6,7 +6,7 @@
 		"SPDX-License-Identifier": "MIT",
 		"sourcePath" : "XYO/QuantumScript.Extension/OpenSSL",
 		"defines" : [
-			"OPENSSL_API_COMPAT=20913"
+			"OPENSSL_API_COMPAT=20000000"
 		],
 		"dependency" : [
 			"quantum-script",
