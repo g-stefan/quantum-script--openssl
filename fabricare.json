@@ -10,15 +10,28 @@
 			"quantum-script--console",
 			"quantum-script--buffer",
 			"quantum-script--crypt",
-			"xyo-cryptography",
-			"libbz2",
-			"libxml2",
-			"libxslt",
-			"libcrypto",
-			"libssl"
+			"xyo-cryptography"
 		],
-		"library" : [
-			"crypt32"
-		]
+		"osWindows" : {
+			"dependency" : [
+				"libbz2",
+				"libxml2",
+				"libxslt",
+				"libcrypto",
+				"libssl"
+			],
+			"library" : [
+				"crypt32"
+			]
+		},
+		"osLinux" : {
+			"library" : [
+				"libbz2",
+				"libxml2",
+				"libxslt",
+				"libcrypto",
+				"libssl"
+			]
+		}
 	}
 }
