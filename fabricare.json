@@ -11,11 +11,14 @@
 			"quantum-script--buffer",
 			"quantum-script--crypt",
 			"xyo-cryptography",
-			"bzip2",
+			"libbz2",
 			"libxml2",
 			"libxslt",
 			"libcrypto",
 			"libssl"
+		],
+		"library" : [
+			"crypt32"
 		]
 	}
 }
