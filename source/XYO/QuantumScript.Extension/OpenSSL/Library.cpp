@@ -661,7 +661,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				};
 
 				static TPointer<Variable> cryptPrivateEncrypt(VariableFunction *function, Variable *this_, VariableArray *arguments) {
-#ifdef QUANTUM_SCRIPT_DEBUG_RUNTIME
+#ifdef XYO_QUANTUMSCRIPT_DEBUG_RUNTIME
 					printf("- openssl-crypt-private-encrypt\n");
 #endif
 					TPointerX<Variable> &passwordV = arguments->index(0);
@@ -701,7 +701,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				};
 
 				static TPointer<Variable> cryptPrivateDecrypt(VariableFunction *function, Variable *this_, VariableArray *arguments) {
-#ifdef QUANTUM_SCRIPT_DEBUG_RUNTIME
+#ifdef XYO_QUANTUMSCRIPT_DEBUG_RUNTIME
 					printf("- openssl-crypt-private-decrypt\n");
 #endif
 					TPointerX<Variable> &passwordV = arguments->index(0);
@@ -741,7 +741,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				};
 
 				static TPointer<Variable> cryptPublicEncrypt(VariableFunction *function, Variable *this_, VariableArray *arguments) {
-#ifdef QUANTUM_SCRIPT_DEBUG_RUNTIME
+#ifdef XYO_QUANTUMSCRIPT_DEBUG_RUNTIME
 					printf("- openssl-crypt-public-encrypt\n");
 #endif
 					TPointerX<Variable> &passwordV = arguments->index(0);
@@ -781,7 +781,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				};
 
 				static TPointer<Variable> cryptPublicDecrypt(VariableFunction *function, Variable *this_, VariableArray *arguments) {
-#ifdef QUANTUM_SCRIPT_DEBUG_RUNTIME
+#ifdef XYO_QUANTUMSCRIPT_DEBUG_RUNTIME
 					printf("- openssl-crypt-public-decrypt\n");
 #endif
 					TPointerX<Variable> &passwordV = arguments->index(0);
@@ -821,7 +821,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				};
 
 				static TPointer<Variable> cryptPrivateEncryptFile(VariableFunction *function, Variable *this_, VariableArray *arguments) {
-#ifdef QUANTUM_SCRIPT_DEBUG_RUNTIME
+#ifdef XYO_QUANTUMSCRIPT_DEBUG_RUNTIME
 					printf("- openssl-crypt-private-encrypt-file\n");
 #endif
 					TPointerX<Variable> &passwordV = arguments->index(0);
@@ -847,7 +847,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				};
 
 				static TPointer<Variable> cryptPrivateDecryptFile(VariableFunction *function, Variable *this_, VariableArray *arguments) {
-#ifdef QUANTUM_SCRIPT_DEBUG_RUNTIME
+#ifdef XYO_QUANTUMSCRIPT_DEBUG_RUNTIME
 					printf("- openssl-crypt-private-decrypt-file\n");
 #endif
 					TPointerX<Variable> &passwordV = arguments->index(0);
@@ -873,7 +873,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				};
 
 				static TPointer<Variable> cryptPublicEncryptFile(VariableFunction *function, Variable *this_, VariableArray *arguments) {
-#ifdef QUANTUM_SCRIPT_DEBUG_RUNTIME
+#ifdef XYO_QUANTUMSCRIPT_DEBUG_RUNTIME
 					printf("- openssl-crypt-public-encrypt-file\n");
 #endif
 					TPointerX<Variable> &passwordV = arguments->index(0);
@@ -899,7 +899,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				};
 
 				static TPointer<Variable> cryptPublicDecryptFile(VariableFunction *function, Variable *this_, VariableArray *arguments) {
-#ifdef QUANTUM_SCRIPT_DEBUG_RUNTIME
+#ifdef XYO_QUANTUMSCRIPT_DEBUG_RUNTIME
 					printf("- openssl-crypt-public-decrypt-file\n");
 #endif
 					TPointerX<Variable> &passwordV = arguments->index(0);
