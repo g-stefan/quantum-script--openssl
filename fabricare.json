@@ -1,42 +1,46 @@
 {
-	"project": {
-		"name":"quantum-script--openssl",
-		"type":"xyo-cpp",
-		"make" : "lib-and-dll",
-		"SPDX-License-Identifier": "MIT",
-		"sourcePath" : "XYO/QuantumScript.Extension/OpenSSL",
-		"defines" : [
-			"OPENSSL_API_COMPAT=20000000"
+	"solution": {
+		"name" : "quantum-script--openssl",
+		"type" : "xyo-cpp",
+		"projects": [
+			{
+				"name" : "quantum-script--openssl",
+				"make" : "lib-and-dll",
+				"SPDX-License-Identifier": "MIT",
+				"sourcePath" : "XYO/QuantumScript.Extension/OpenSSL",
+				"defines" : [
+					"OPENSSL_API_COMPAT=20000000"
+				],
+				"dependency" : [
+					"quantum-script",
+					"quantum-script--console",
+					"quantum-script--buffer",
+					"quantum-script--crypt",
+					"xyo-cryptography"
+				],
+				"osWindows" : {
+					"dependency" : [
+						"libbz2",
+						"libxml2",
+						"libxslt",
+						"libcrypto",
+						"libssl"
+					],
+					"library" : [
+						"crypt32"
+					]
+				},
+				"osLinux" : {
+					"library" : [
+						"libbz2",
+						"libxml2",
+						"libxslt",
+						"libcrypto",
+						"libssl"
+					]
+				}
+			}
 		],
-		"dependency" : [
-			"quantum-script",
-			"quantum-script--console",
-			"quantum-script--buffer",
-			"quantum-script--crypt",
-			"xyo-cryptography"
-		],
-		"osWindows" : {
-			"dependency" : [
-				"libbz2",
-				"libxml2",
-				"libxslt",
-				"libcrypto",
-				"libssl"
-			],
-			"library" : [
-				"crypt32"
-			]
-		},
-		"osLinux" : {
-			"library" : [
-				"libbz2",
-				"libxml2",
-				"libxslt",
-				"libcrypto",
-				"libssl"
-			]
-		},
-		"hasRelease" : true,
-		"githubRelease" : true
+		"hasGithub" : true
 	}
 }
