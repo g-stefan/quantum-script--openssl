@@ -18,25 +18,16 @@
 					"quantum-script--crypt",
 					"xyo-cryptography"
 				],
+				"library" : [
+					"libbz2",
+					"libxml2",
+					"libxslt",
+					"libcrypto",
+					"libssl"
+				],
 				"osWindows" : {
-					"dependency" : [
-						"libbz2",
-						"libxml2",
-						"libxslt",
-						"libcrypto",
-						"libssl"
-					],
 					"library" : [
 						"crypt32"
-					]
-				},
-				"osLinux" : {
-					"library" : [
-						"libbz2",
-						"libxml2",
-						"libxslt",
-						"libcrypto",
-						"libssl"
 					]
 				}
 			}
