@@ -32,9 +32,6 @@
 				},
 				"osLinux" : {
 					"library" : [
-						"libbz2",
-						"libxml2",
-						"libxslt",
 						"libcrypto",
 						"libssl"
 					]
