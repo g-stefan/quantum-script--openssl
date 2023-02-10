@@ -7,3 +7,4 @@ Script.requireExtension("OpenSSL");
 HTTPS.downloadFile("https://www.google.ro/", "test/index.html");
 
 Console.writeLn("-> test 0001 ok");
+
