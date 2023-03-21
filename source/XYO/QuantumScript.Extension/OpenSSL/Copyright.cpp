@@ -14,19 +14,19 @@ namespace XYO::QuantumScript::Extension::OpenSSL::Copyright {
 	static const char *company_ = XYO_QUANTUMSCRIPT_EXTENSION_OPENSSL_COMPANY;
 	static const char *contact_ = XYO_QUANTUMSCRIPT_EXTENSION_OPENSSL_CONTACT;
 
-	const char *copyright() {
+	std::string copyright() {
 		return copyright_;
 	};
 
-	const char *publisher() {
+	std::string publisher() {
 		return publisher_;
 	};
 
-	const char *company() {
+	std::string company() {
 		return company_;
 	};
 
-	const char *contact() {
+	std::string contact() {
 		return contact_;
 	};
 

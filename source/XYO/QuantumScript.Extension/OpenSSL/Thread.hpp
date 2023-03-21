@@ -13,8 +13,8 @@
 
 namespace XYO::QuantumScript::Extension::OpenSSL {
 
-				XYO_QUANTUMSCRIPT_EXTENSION_OPENSSL_EXPORT bool threadLockInit();
+	XYO_QUANTUMSCRIPT_EXTENSION_OPENSSL_EXPORT bool threadLockInit();
 
-			};
-		
+};
+
 #endif

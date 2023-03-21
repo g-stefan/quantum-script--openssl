@@ -5,32 +5,40 @@
 // SPDX-License-Identifier: MIT
 
 #include <XYO/QuantumScript.Extension/OpenSSL/License.hpp>
+#include <XYO/QuantumScript.Extension/OpenSSL/Copyright.hpp>
 
 namespace XYO::QuantumScript::Extension::OpenSSL::License {
 
-	const char *license() {
-		return 
-		#include <XYO/QuantumScript.Extension/OpenSSL/License.quantum-script--openssl.Source.cpp>
-		"\r\n"
-		"bzip2\r\n"
-		"\r\n"
-		#include <XYO/QuantumScript.Extension/OpenSSL/License.bzip2.Source.cpp>
-		"\r\n"
-		"libxml2\r\n"
-		"\r\n"
-		#include <XYO/QuantumScript.Extension/OpenSSL/License.libxml2.Source.cpp>
-		"\r\n"
-		"libxlt\r\n"
-		"\r\n"
-		#include <XYO/QuantumScript.Extension/OpenSSL/License.libxslt.Source.cpp>
-		"\r\n"
-		"openssl\r\n"
-		"\r\n"
-		#include <XYO/QuantumScript.Extension/OpenSSL/License.openssl.Source.cpp>
-		;
+	std::string license() {
+		std::string retV;
+		retV += ManagedMemory::License::licenseMITHeader();
+		retV += Copyright::copyright();
+		retV += "\r\n";
+		retV += ManagedMemory::License::licenseMITContent();
+
+		retV +=
+		    "\r\n"
+		    "bzip2\r\n"
+		    "\r\n"
+#include <XYO/QuantumScript.Extension/OpenSSL/License.bzip2.Source.cpp>
+		    "\r\n"
+		    "libxml2\r\n"
+		    "\r\n"
+#include <XYO/QuantumScript.Extension/OpenSSL/License.libxml2.Source.cpp>
+		    "\r\n"
+		    "libxlt\r\n"
+		    "\r\n"
+#include <XYO/QuantumScript.Extension/OpenSSL/License.libxslt.Source.cpp>
+		    "\r\n"
+		    "openssl\r\n"
+		    "\r\n"
+#include <XYO/QuantumScript.Extension/OpenSSL/License.openssl.Source.cpp>
+		    ;
+
+		return retV;
 	};
 
-	const char *shortLicense() {
+	std::string shortLicense() {
 		return XYO::ManagedMemory::License::shortLicense();
 	};
 
