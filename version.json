@@ -1,8 +1,8 @@
 {
 	"quantum-script--openssl": {
-		"version": "7.0.0",
+		"version": "7.0.1",
 		"build": "8",
-		"date": "2023-04-12",
-		"time": "23:37:31"
+		"date": "2023-09-11",
+		"time": "13:28:50"
 	}
 }
