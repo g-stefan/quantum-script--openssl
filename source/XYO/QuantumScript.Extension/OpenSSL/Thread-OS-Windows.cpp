@@ -6,7 +6,7 @@
 
 #include <XYO/QuantumScript.Extension/OpenSSL/Thread.hpp>
 
-#ifdef XYO_OS_WINDOWS
+#ifdef XYO_PLATFORM_OS_WINDOWS
 
 #	include <windows.h>
 #	include <openssl/ssl.h>

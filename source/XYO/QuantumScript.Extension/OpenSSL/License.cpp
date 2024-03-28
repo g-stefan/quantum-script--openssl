@@ -11,10 +11,10 @@ namespace XYO::QuantumScript::Extension::OpenSSL::License {
 
 	std::string license() {
 		std::string retV;
-		retV += ManagedMemory::License::licenseMITHeader();
+		retV += Platform::License::licenseMITHeader();
 		retV += Copyright::copyright();
 		retV += "\r\n";
-		retV += ManagedMemory::License::licenseMITContent();
+		retV += Platform::License::licenseMITContent();
 
 		retV +=
 		    "\r\n"

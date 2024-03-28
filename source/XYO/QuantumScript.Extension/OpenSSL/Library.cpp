@@ -1202,7 +1202,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 	};
 };
 
-#ifdef XYO_COMPILE_DYNAMIC_LIBRARY
+#ifdef XYO_PLATFORM_COMPILE_DYNAMIC_LIBRARY
 extern "C" XYO_QUANTUMSCRIPT_EXTENSION_OPENSSL_EXPORT void quantumScriptExtension(XYO::QuantumScript::Executive *executive, void *extensionId) {
 	XYO::QuantumScript::Extension::OpenSSL::initExecutive(executive, extensionId);
 };

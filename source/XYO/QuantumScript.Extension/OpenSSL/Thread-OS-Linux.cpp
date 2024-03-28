@@ -6,7 +6,7 @@
 
 #include <XYO/QuantumScript.Extension/OpenSSL/Thread.hpp>
 
-#ifdef XYO_OS_LINUX
+#ifdef XYO_PLATFORM_OS_LINUX
 
 #	include <pthread.h>
 #	include <unistd.h>
