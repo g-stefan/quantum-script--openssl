@@ -99,7 +99,7 @@ HTTPS.json = function(url, data, headers, mode) {
 			socket.writeLn(headers);
 		};
 		socket.writeLn("Connection: close");
-		socket.writeLn("Content-Type: openssl/json");
+		socket.writeLn("Content-Type: application/json");
 		socket.writeLn("Content-Length: " + json.length);
 		socket.writeLn("");
 		socket.write(json);
