@@ -5,7 +5,7 @@
 		"projects": [
 			{
 				"name" : "quantum-script--openssl",
-				"make" : "lib-and-dll",
+				"make" : "dll-or-lib",
 				"SPDX-License-Identifier": "MIT",
 				"sourcePath" : "XYO/QuantumScript.Extension/OpenSSL",
 				"defines" : [
