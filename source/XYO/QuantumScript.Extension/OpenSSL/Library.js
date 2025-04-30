@@ -1,7 +1,7 @@
 // Quantum Script Extension OpenSSL
-// Copyright (c) 2016-2024 Grigore Stefan <g_stefan@yahoo.com>
+// Copyright (c) 2016-2025 Grigore Stefan <g_stefan@yahoo.com>
 // MIT License (MIT) <http://opensource.org/licenses/MIT>
-// SPDX-FileCopyrightText: 2016-2024 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-FileCopyrightText: 2016-2025 Grigore Stefan <g_stefan@yahoo.com>
 // SPDX-License-Identifier: MIT
 
 Script.requireExtension("Socket");
@@ -68,7 +68,7 @@ HTTPS.json = function(url, data, headers, mode) {
 	var response;
 	var header;
 
-	if(URL.getSchemeName(url).toUpperCaseAscii() != "HTTPS") {
+	if(URL.getSchemeName(url).toUpperCaseASCII() != "HTTPS") {
 		return null;
 	};
 	host = URL.getHostNameAndPort(url);
@@ -83,7 +83,7 @@ HTTPS.json = function(url, data, headers, mode) {
 	if(Script.isNil(mode)) {
 		mode = "POST";
 	};
-	mode = mode.toUpperCaseAscii();
+	mode = mode.toUpperCaseASCII();
 
 	socket = OpenSSL.sslConnect(host);
 
@@ -148,7 +148,7 @@ HTTPS.downloadFile = function(url, fileName, headers, mode, extra, content) {
 		fileName = Shell.getFileName(URL.getPathAndFileName(url));
 	};
 
-	if(URL.getSchemeName(url).toUpperCaseAscii() != "HTTPS") {
+	if(URL.getSchemeName(url).toUpperCaseASCII() != "HTTPS") {
 		return false;
 	};
 
@@ -164,7 +164,7 @@ HTTPS.downloadFile = function(url, fileName, headers, mode, extra, content) {
 	if(Script.isNil(mode)) {
 		mode = "GET";
 	};
-	mode = mode.toUpperCaseAscii();
+	mode = mode.toUpperCaseASCII();
 
 	socket = OpenSSL.sslConnect(host);
 
@@ -228,7 +228,7 @@ HTTPS.post = function(url, data, headers, mode) {
 	var response;
 	var header;
 
-	if(URL.getSchemeName(url).toUpperCaseAscii() != "HTTPS") {
+	if(URL.getSchemeName(url).toUpperCaseASCII() != "HTTPS") {
 		return null;
 	};
 	host = URL.getHostNameAndPort(url);
@@ -243,7 +243,7 @@ HTTPS.post = function(url, data, headers, mode) {
 	if(Script.isNil(mode)) {
 		mode = "POST";
 	};
-	mode = mode.toUpperCaseAscii();
+	mode = mode.toUpperCaseASCII();
 
 	socket = OpenSSL.sslConnect(host);
 
@@ -311,7 +311,7 @@ HTTPS.postRequest = function(url, data, headers, mode) {
 	var response;
 	var header;
 
-	if(URL.getSchemeName(url).toUpperCaseAscii() != "HTTPS") {
+	if(URL.getSchemeName(url).toUpperCaseASCII() != "HTTPS") {
 		return null;
 	};
 	host = URL.getHostNameAndPort(url);
@@ -326,7 +326,7 @@ HTTPS.postRequest = function(url, data, headers, mode) {
 	if(Script.isNil(mode)) {
 		mode = "POST";
 	};
-	mode = mode.toUpperCaseAscii();
+	mode = mode.toUpperCaseASCII();
 
 	socket = OpenSSL.sslConnect(host);
 
