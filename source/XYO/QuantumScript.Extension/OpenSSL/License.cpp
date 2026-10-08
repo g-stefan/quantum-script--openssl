@@ -26,7 +26,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL::License {
 		    "\r\n"
 #include <XYO/QuantumScript.Extension/OpenSSL/License.libxml2.Source.cpp>
 		    "\r\n"
-		    "libxlt\r\n"
+		    "libxslt\r\n"
 		    "\r\n"
 #include <XYO/QuantumScript.Extension/OpenSSL/License.libxslt.Source.cpp>
 		    "\r\n"

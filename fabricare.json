@@ -1,5 +1,6 @@
 {
 	"solution": {
+		"namespace" : "xyo",
 		"name" : "quantum-script--openssl",
 		"type" : "xyo-cpp",
 		"projects": [
@@ -36,6 +37,36 @@
 						"libssl"
 					]
 				}
+			},
+			{
+				"name" : "test.01",
+				"make" : "exe",
+				"category" : "test",
+				"SPDX-License-Identifier": "Unlicense",
+				"dependency" : [
+					"quantum-script--openssl",
+					"quantum-script--file",
+					"quantum-script--socket",
+					"quantum-script--url",
+					"quantum-script--json",
+					"quantum-script--shell",
+					"quantum-script--shellfind"
+				]
+			},
+			{
+				"name" : "test.02",
+				"make" : "exe",
+				"category" : "test",
+				"SPDX-License-Identifier": "Unlicense",
+				"dependency" : [
+					"quantum-script--openssl",
+					"quantum-script--file",
+					"quantum-script--socket",
+					"quantum-script--url",
+					"quantum-script--json",
+					"quantum-script--shell",
+					"quantum-script--shellfind"
+				]
 			}
 		]
 	}

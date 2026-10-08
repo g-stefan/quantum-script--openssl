@@ -1,0 +1,124 @@
+version = 1
+SPDX-PackageName = "Quantum Script Extension OpenSSL"
+SPDX-PackageSupplier = "Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-PackageDownloadLocation = "https://github.com/g-stefan/quantum-script--openssl"
+
+[[annotations]]
+path = ".github/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = ".github/CODE_OF_CONDUCT.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2014 Coraline Ada Ehmke <https://where.coraline.codes/>"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = ".gitignore"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = ".clang-format"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = ".vscode/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "fabricare/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "fabricare.json"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "README.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "CHANGELOG.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "docs/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ".claude/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "output/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "source/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["source/XYO/QuantumScript.Extension/OpenSSL/License/bzip2.txt", "source/XYO/QuantumScript.Extension/OpenSSL/License.bzip2.Source.cpp"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "1996-2019 Julian R Seward <jseward@acm.org>"
+SPDX-License-Identifier = "LicenseRef-bzip2-1.0.8"
+
+[[annotations]]
+path = ["source/XYO/QuantumScript.Extension/OpenSSL/License/libxml2.txt", "source/XYO/QuantumScript.Extension/OpenSSL/License.libxml2.Source.cpp"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["1998-2012 Daniel Veillard", "2000, 2012 Bjorn Reese and Daniel Veillard", "2000 Gary Pennington and Daniel Veillard", "1998 Bjorn Reese and Daniel Stenberg"]
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["source/XYO/QuantumScript.Extension/OpenSSL/License/libxslt.txt", "source/XYO/QuantumScript.Extension/OpenSSL/License.libxslt.Source.cpp"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2001-2002 Daniel Veillard", "2001-2002 Thomas Broyer, Charlie Bozeman and Daniel Veillard"]
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["source/XYO/QuantumScript.Extension/OpenSSL/License/openssl.txt", "source/XYO/QuantumScript.Extension/OpenSSL/License.openssl.Source.cpp"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["1998-2019 The OpenSSL Project", "1995-1998 Eric Young <eay@cryptsoft.com>"]
+SPDX-License-Identifier = "OpenSSL"
+
+[[annotations]]
+path = "test/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "temp/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "version.json"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"

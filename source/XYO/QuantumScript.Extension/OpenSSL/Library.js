@@ -12,7 +12,10 @@ Script.requireExtension("JSON");
 OpenSSL.sslConnect = function(server) {
 	var fn = function(server) {
 		var ctx = OpenSSL.ctxNew();
-		var bio = OpenSSL.bioConnect(ctx, server);
+		var bio;
+		if(!Script.isNil(ctx)) {
+			bio = OpenSSL.bioConnect(ctx, server);
+		};
 		this.isValid = function() {
 			return !Script.isNil(bio);
 		};
@@ -66,9 +69,13 @@ HTTPS.json = function(url, data, headers, mode) {
 	var host;
 	var json = JSON.encode(data);
 	var response;
-	var header;
+	var scheme;
 
-	if(URL.getSchemeName(url).toUpperCaseASCII() != "HTTPS") {
+	scheme = URL.getSchemeName(url);
+	if(Script.isNil(scheme)) {
+		return null;
+	};
+	if(scheme.toUpperCaseASCII() != "HTTPS") {
 		return null;
 	};
 	host = URL.getHostNameAndPort(url);
@@ -76,7 +83,7 @@ HTTPS.json = function(url, data, headers, mode) {
 		return null;
 	};
 
-	if(host.indexOf(":") < 0) {
+	if((host.indexOf(":") < 0) || (host.substring(host.length - 1, 1) == "]")) {
 		host += ":443";
 	};
 
@@ -116,7 +123,7 @@ HTTPS.json = function(url, data, headers, mode) {
 			};
 			decodedResponse = this.decodeHeaderLine(response);
 			if(decodedResponse) {
-				if(decodedResponse[0] == "Content-Length") {
+				if(decodedResponse[0].toLowerCaseASCII() == "content-length") {
 					contentLength = Convert.toNumber(decodedResponse[1]);
 				};
 			};
@@ -143,12 +150,21 @@ HTTPS.downloadFile = function(url, fileName, headers, mode, extra, content) {
 	var host;
 	var response;
 	var file;
+	var scheme;
 
 	if(Script.isNil(fileName)) {
+		Script.requireExtension("Shell");
 		fileName = Shell.getFileName(URL.getPathAndFileName(url));
 	};
+	if(Script.isNil(fileName) || (fileName.length == 0)) {
+		return false;
+	};
 
-	if(URL.getSchemeName(url).toUpperCaseASCII() != "HTTPS") {
+	scheme = URL.getSchemeName(url);
+	if(Script.isNil(scheme)) {
+		return false;
+	};
+	if(scheme.toUpperCaseASCII() != "HTTPS") {
 		return false;
 	};
 
@@ -157,7 +173,7 @@ HTTPS.downloadFile = function(url, fileName, headers, mode, extra, content) {
 		return false;
 	};
 
-	if(host.indexOf(":") < 0) {
+	if((host.indexOf(":") < 0) || (host.substring(host.length - 1, 1) == "]")) {
 		host += ":443";
 	};
 
@@ -197,7 +213,7 @@ HTTPS.downloadFile = function(url, fileName, headers, mode, extra, content) {
 			};
 			decodedResponse = this.decodeHeaderLine(response);
 			if(decodedResponse) {
-				if(decodedResponse[0] == "Content-Length") {
+				if(decodedResponse[0].toLowerCaseASCII() == "content-length") {
 					contentLength = Convert.toNumber(decodedResponse[1]);
 				};
 			};
@@ -213,22 +229,28 @@ HTTPS.downloadFile = function(url, fileName, headers, mode, extra, content) {
 				};
 			};
 			file.close();
+			socket.close();
 			return true;
 		};
+		socket.close();
 	};
 	return false;
 };
 
 
 HTTPS.post = function(url, data, headers, mode) {
-	var socket = new Socket();
+	var socket;
 	var decodedResponse;
 	var contentLength;
 	var host;
 	var response;
-	var header;
+	var scheme;
 
-	if(URL.getSchemeName(url).toUpperCaseASCII() != "HTTPS") {
+	scheme = URL.getSchemeName(url);
+	if(Script.isNil(scheme)) {
+		return null;
+	};
+	if(scheme.toUpperCaseASCII() != "HTTPS") {
 		return null;
 	};
 	host = URL.getHostNameAndPort(url);
@@ -236,7 +258,7 @@ HTTPS.post = function(url, data, headers, mode) {
 		return null;
 	};
 
-	if(host.indexOf(":") < 0) {
+	if((host.indexOf(":") < 0) || (host.substring(host.length - 1, 1) == "]")) {
 		host += ":443";
 	};
 
@@ -283,7 +305,7 @@ HTTPS.post = function(url, data, headers, mode) {
 			};
 			decodedResponse = this.decodeHeaderLine(response);
 			if(decodedResponse) {
-				if(decodedResponse[0] == "Content-Length") {
+				if(decodedResponse[0].toLowerCaseASCII() == "content-length") {
 					contentLength = Convert.toNumber(decodedResponse[1]);
 				};
 			};
@@ -304,14 +326,18 @@ HTTPS.post = function(url, data, headers, mode) {
 };
 
 HTTPS.postRequest = function(url, data, headers, mode) {
-	var socket = new Socket();
+	var socket;
 	var decodedResponse;
 	var contentLength;
 	var host;
 	var response;
-	var header;
+	var scheme;
 
-	if(URL.getSchemeName(url).toUpperCaseASCII() != "HTTPS") {
+	scheme = URL.getSchemeName(url);
+	if(Script.isNil(scheme)) {
+		return null;
+	};
+	if(scheme.toUpperCaseASCII() != "HTTPS") {
 		return null;
 	};
 	host = URL.getHostNameAndPort(url);
@@ -319,7 +345,7 @@ HTTPS.postRequest = function(url, data, headers, mode) {
 		return null;
 	};
 
-	if(host.indexOf(":") < 0) {
+	if((host.indexOf(":") < 0) || (host.substring(host.length - 1, 1) == "]")) {
 		host += ":443";
 	};
 
@@ -366,7 +392,7 @@ HTTPS.postRequest = function(url, data, headers, mode) {
 			};
 			decodedResponse = this.decodeHeaderLine(response);
 			if(decodedResponse) {
-				if(decodedResponse[0] == "Content-Length") {
+				if(decodedResponse[0].toLowerCaseASCII() == "content-length") {
 					contentLength = Convert.toNumber(decodedResponse[1]);
 				};
 			};

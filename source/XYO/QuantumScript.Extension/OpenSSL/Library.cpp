@@ -46,6 +46,52 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		RSA_free((RSA *)rsa);
 	};
 
+	// The native resource of a script value, it must be an open handle of the expected kind
+	static void *getResource(TPointerX<Variable> &value, VariableResource::ResourceDelete resourceDelete) {
+		if (!TIsType<VariableResource>(value)) {
+			throw(Error("invalid parameter"));
+		};
+		VariableResource *variableResource = (VariableResource *)value.value();
+		if ((variableResource->resource == nullptr) || (variableResource->resourceDelete != resourceDelete)) {
+			throw(Error("invalid parameter"));
+		};
+		return variableResource->resource;
+	};
+
+	// Encrypted keys are not supported, do not let OpenSSL ask for a password on the console
+	static int pemNoPassword(char *buffer, int size, int rwflag, void *userData) {
+		return -1;
+	};
+
+	// Server Name Indication: the host name without the port, not set for IP addresses
+	static void setServerNameIndication(SSL *ssl, const char *server) {
+		char hostName[256];
+		size_t k;
+		bool isIPv4 = true;
+
+		// IPv6 address
+		if (server[0] == '[') {
+			return;
+		};
+
+		for (k = 0; (server[k] != 0) && (server[k] != ':'); ++k) {
+			if (k + 1 >= sizeof(hostName)) {
+				return;
+			};
+			hostName[k] = server[k];
+			if (!(((server[k] >= '0') && (server[k] <= '9')) || (server[k] == '.'))) {
+				isIPv4 = false;
+			};
+		};
+		hostName[k] = 0;
+
+		if ((k == 0) || isIPv4) {
+			return;
+		};
+
+		SSL_set_tlsext_host_name(ssl, hostName);
+	};
+
 	static TPointer<Variable> ctxNew(VariableFunction *function, Variable *this_, VariableArray *arguments) {
 #ifdef QUANTUM_SCRIPT_VM_DEBUG_RUNTIME
 		printf("- openssl-ctx-new\n");
@@ -53,6 +99,9 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 
 		SSL_CTX *ssl_ctx;
 		ssl_ctx = SSL_CTX_new(SSLv23_client_method());
+		if (ssl_ctx == nullptr) {
+			return Context::getValueUndefined();
+		};
 		SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL);
 
 		return VariableResource::newVariable(ssl_ctx, (VariableResource::ResourceDelete)ctxDelete);
@@ -63,10 +112,13 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		printf("- openssl-ssl-new\n");
 #endif
 
-		TPointerX<Variable> &ctxSSL = arguments->index(0);
+		SSL_CTX *ssl_ctx = (SSL_CTX *)getResource(arguments->index(0), ctxDelete);
 
 		SSL *ssl;
-		ssl = SSL_new((SSL_CTX *)(((VariableResource *)ctxSSL.value())->resource));
+		ssl = SSL_new(ssl_ctx);
+		if (ssl == nullptr) {
+			return Context::getValueUndefined();
+		};
 
 		return VariableResource::newVariable(ssl, (VariableResource::ResourceDelete)sslDelete);
 	};
@@ -76,18 +128,22 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		printf("- openssl-bio-connect\n");
 #endif
 
-		TPointerX<Variable> &ctxSSL = arguments->index(0);
+		SSL_CTX *ssl_ctx = (SSL_CTX *)getResource(arguments->index(0), ctxDelete);
 		String targetServer = (arguments->index(1))->toString();
 
 		BIO *bio;
-		SSL *ssl;
+		SSL *ssl = nullptr;
 
-		bio = BIO_new_ssl_connect((SSL_CTX *)(((VariableResource *)ctxSSL.value())->resource));
+		bio = BIO_new_ssl_connect(ssl_ctx);
+		if (bio == nullptr) {
+			return Context::getValueUndefined();
+		};
 		BIO_get_ssl(bio, &ssl);
 		if (!ssl) {
 			BIO_free_all(bio);
 			return Context::getValueUndefined();
 		};
+		setServerNameIndication(ssl, targetServer.value());
 		BIO_set_conn_hostname(bio, targetServer.value());
 		if (SSL_do_handshake(ssl) <= 0) {
 			BIO_free_all(bio);
@@ -102,9 +158,9 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		printf("- openssl-bio-close\n");
 #endif
 
-		TPointerX<Variable> &bio = arguments->index(0);
+		BIO *bio = (BIO *)getResource(arguments->index(0), bioDelete);
 
-		BIO_ssl_shutdown((BIO *)(((VariableResource *)bio.value())->resource));
+		BIO_ssl_shutdown(bio);
 
 		return Context::getValueUndefined();
 	};
@@ -115,14 +171,13 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 #endif
 		String retV(1024, 1024); // first 1024, next + 1024 bytes
 		Number ln;
-		size_t readLn;
+		int readLn;
 		size_t readToLn;
 		size_t readX;
 		size_t readTotal;
-		size_t k;
 		char buffer[1024];
 
-		BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		BIO *bio = (BIO *)getResource(arguments->index(0), bioDelete);
 
 		ln = (arguments->index(1))->toNumber();
 		if (isnan(ln) || isinf(ln) || signbit(ln)) {
@@ -136,13 +191,14 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 			readX = readToLn;
 		};
 		for (;;) {
-			readLn = BIO_read(bio, buffer, readX);
-
-			if (readLn > 0) {
-				retV.concatenate(buffer, readLn);
+			readLn = BIO_read(bio, buffer, (int)readX);
+			// end of file or error
+			if (readLn <= 0) {
+				break;
 			};
-			// end of file
-			if (readLn < readX) {
+			retV.concatenate(buffer, readLn);
+			// no more data available now
+			if ((size_t)readLn < readX) {
 				break;
 			};
 			// end of read
@@ -165,15 +221,14 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 #endif
 		String retV(1024, 1024); // first 1024, next + 1024 bytes
 		Number ln;
-		size_t readLn;
+		int readLn;
 		size_t readToLn;
 		size_t readTotal;
-		size_t k;
 		char buffer[2];
 
 		buffer[1] = 0;
 
-		BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		BIO *bio = (BIO *)getResource(arguments->index(0), bioDelete);
 
 		ln = (arguments->index(1))->toNumber();
 		if (isnan(ln) || isinf(ln) || signbit(ln)) {
@@ -201,8 +256,9 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 							retV.concatenate("\r", 1);
 							retV.concatenate("\n", 1);
 							return VariableString::newVariable(retV);
-							break;
 						};
+						// a single '\r' is part of the line
+						retV.concatenate("\r", 1);
 						retV.concatenate(buffer, 1);
 						readTotal += 2;
 						if (readTotal >= readToLn) {
@@ -239,7 +295,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		printf("- openssl-bio-write\n");
 #endif
 
-		BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		BIO *bio = (BIO *)getResource(arguments->index(0), bioDelete);
 
 		String toWrite = (arguments->index(1))->toString();
 		return VariableNumber::newVariable((Number)(BIO_write(bio,
@@ -251,7 +307,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		printf("- openssl-bio-write-ln\n");
 #endif
 
-		BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		BIO *bio = (BIO *)getResource(arguments->index(0), bioDelete);
 
 		String toWrite = (arguments->index(1))->toString();
 		toWrite << "\r\n";
@@ -263,14 +319,13 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 #ifdef QUANTUM_SCRIPT_VM_DEBUG_RUNTIME
 		printf("- openssl-bio-read-to-buffer\n");
 #endif
-		size_t readLn;
+		int readLn;
 		size_t readToLn;
 		size_t readX;
 		size_t readTotal;
-		size_t k;
 		Number ln;
 
-		BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		BIO *bio = (BIO *)getResource(arguments->index(0), bioDelete);
 
 		TPointerX<Variable> &buffer(arguments->index(1));
 
@@ -295,9 +350,9 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		readTotal = 0;
 		readX = readToLn;
 		for (;;) {
-			readLn = BIO_read(bio, &(((VariableBuffer *)buffer.value())->buffer.buffer)[readTotal], readX);
-			// end of transmision
-			if (readLn == 0) {
+			readLn = BIO_read(bio, &(((VariableBuffer *)buffer.value())->buffer.buffer)[readTotal], (int)readX);
+			// end of transmision or error
+			if (readLn <= 0) {
 				break;
 			};
 			readTotal += readLn;
@@ -315,7 +370,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		printf("- openssl-bio-write-from-buffer\n");
 #endif
 
-		BIO *bio = (BIO *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		BIO *bio = (BIO *)getResource(arguments->index(0), bioDelete);
 
 		TPointerX<Variable> &buffer(arguments->index(1));
 
@@ -349,7 +404,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 			return VariableBoolean::newVariable(false);
 		};
 
-		if (bufferStart + bufferLn > ((VariableBuffer *)buffer.value())->buffer.length) {
+		if ((bufferStart > ((VariableBuffer *)buffer.value())->buffer.length) || (bufferLn > ((VariableBuffer *)buffer.value())->buffer.length - bufferStart)) {
 			return VariableBoolean::newVariable(false);
 		};
 
@@ -396,7 +451,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 			return VariableBoolean::newVariable(false);
 		};
 
-		if (bufferStart + bufferLn > ((VariableBuffer *)buffer.value())->buffer.length) {
+		if ((bufferStart > ((VariableBuffer *)buffer.value())->buffer.length) || (bufferLn > ((VariableBuffer *)buffer.value())->buffer.length - bufferStart)) {
 			return VariableBoolean::newVariable(false);
 		};
 
@@ -425,7 +480,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 #ifdef QUANTUM_SCRIPT_VM_DEBUG_RUNTIME
 		printf("- openssl-rsa-size\n");
 #endif
-		RSA *rsa = (RSA *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		RSA *rsa = (RSA *)getResource(arguments->index(0), rsaDelete);
 		return VariableNumber::newVariable(RSA_size(rsa));
 	};
 
@@ -446,7 +501,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		if (bio == nullptr) {
 			return VariableNull::newVariable();
 		};
-		rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, nullptr, nullptr);
+		rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, pemNoPassword, nullptr);
 
 		BIO_free_all(bio);
 
@@ -474,7 +529,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		if (bio == nullptr) {
 			return VariableNull::newVariable();
 		};
-		rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, nullptr, nullptr);
+		rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, pemNoPassword, nullptr);
 
 		BIO_free_all(bio);
 
@@ -490,7 +545,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		printf("- openssl-rsa-public-encrypt\n");
 #endif
 
-		RSA *rsa = (RSA *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		RSA *rsa = (RSA *)getResource(arguments->index(0), rsaDelete);
 		TPointerX<Variable> &buffer(arguments->index(1));
 		TPointerX<Variable> &outBuffer(arguments->index(2));
 
@@ -533,7 +588,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		printf("- openssl-rsa-public-decrypt\n");
 #endif
 
-		RSA *rsa = (RSA *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		RSA *rsa = (RSA *)getResource(arguments->index(0), rsaDelete);
 		TPointerX<Variable> &buffer(arguments->index(1));
 		TPointerX<Variable> &outBuffer(arguments->index(2));
 
@@ -578,7 +633,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		printf("- openssl-rsa-private-encrypt\n");
 #endif
 
-		RSA *rsa = (RSA *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		RSA *rsa = (RSA *)getResource(arguments->index(0), rsaDelete);
 		TPointerX<Variable> &buffer(arguments->index(1));
 		TPointerX<Variable> &outBuffer(arguments->index(2));
 
@@ -620,7 +675,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 #ifdef QUANTUM_SCRIPT_VM_DEBUG_RUNTIME
 		printf("- openssl-rsa-private-decrypt\n");
 #endif
-		RSA *rsa = (RSA *)((VariableResource *)((arguments->index(0)).value()))->resource;
+		RSA *rsa = (RSA *)getResource(arguments->index(0), rsaDelete);
 		TPointerX<Variable> &buffer(arguments->index(1));
 		TPointerX<Variable> &outBuffer(arguments->index(2));
 
@@ -952,11 +1007,11 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		executive->setFunction2("OpenSSL.sslNew(ctx)", sslNew);
 		executive->setFunction2("OpenSSL.bioConnect(ctx,server)", bioConnect);
 		executive->setFunction2("OpenSSL.bioClose(bio)", bioClose);
-		executive->setFunction2("OpenSSL.bioRead(bio)", bioRead);
-		executive->setFunction2("OpenSSL.bioReadLn(bio)", bioReadLn);
+		executive->setFunction2("OpenSSL.bioRead(bio,size)", bioRead);
+		executive->setFunction2("OpenSSL.bioReadLn(bio,size)", bioReadLn);
 		executive->setFunction2("OpenSSL.bioWrite(bio,str)", bioWrite);
 		executive->setFunction2("OpenSSL.bioWriteLn(bio,str)", bioWriteLn);
-		executive->setFunction2("OpenSSL.bioReadToBuffer(bio,buffer)", bioReadToBuffer);
+		executive->setFunction2("OpenSSL.bioReadToBuffer(bio,buffer,size)", bioReadToBuffer);
 		executive->setFunction2("OpenSSL.bioWriteFromBuffer(bio,buffer)", bioWriteFromBuffer);
 		executive->setFunction2("OpenSSL.sha256(bufferIn,st,ln,hashOut)", sha256Hash);
 		executive->setFunction2("OpenSSL.sha512(bufferIn,st,ln,hashOut)", sha512Hash);
@@ -983,7 +1038,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		RSA *rsa = nullptr;
 		BIO *bio = BIO_new_mem_buf(const_cast<uint8_t *>(privateKey), privateKeySize);
 		if (bio != nullptr) {
-			rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, nullptr, nullptr);
+			rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, pemNoPassword, nullptr);
 			BIO_free_all(bio);
 			if (rsa != nullptr) {
 				size_t rsaSize = RSA_size(rsa);
@@ -1002,6 +1057,9 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				randomSalt.processU8(data, dataSize);
 				UConvert::u64ToU8(DateTime::timestampInMilliseconds(), randomKey);
 				randomSalt.processU8(randomKey, 8);
+				if (XYO::Cryptography::SystemRandom::generate(randomKey, sizeof(randomKey))) {
+					randomSalt.processU8(randomKey, sizeof(randomKey));
+				};
 				randomSalt.processDone();
 				randomSalt.toU8(randomKey);
 
@@ -1035,7 +1093,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		RSA *rsa = nullptr;
 		BIO *bio = BIO_new_mem_buf(const_cast<uint8_t *>(privateKey), privateKeySize);
 		if (bio != nullptr) {
-			rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, nullptr, nullptr);
+			rsa = PEM_read_bio_RSAPrivateKey(bio, &rsa, pemNoPassword, nullptr);
 			BIO_free_all(bio);
 			if (rsa != nullptr) {
 				size_t rsaSize = RSA_size(rsa);
@@ -1044,6 +1102,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 					return false;
 				};
 				if (dataSize < rsaSize + 64 + 64 + 8) {
+					RSA_free((RSA *)rsa);
 					return false;
 				};
 
@@ -1073,7 +1132,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		RSA *rsa = nullptr;
 		BIO *bio = BIO_new_mem_buf(const_cast<uint8_t *>(publicKey), publicKeySize);
 		if (bio != nullptr) {
-			rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, nullptr, nullptr);
+			rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, pemNoPassword, nullptr);
 			BIO_free_all(bio);
 			if (rsa != nullptr) {
 				size_t rsaSize = RSA_size(rsa);
@@ -1092,6 +1151,9 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 				randomSalt.processU8(data, dataSize);
 				UConvert::u64ToU8(DateTime::timestampInMilliseconds(), randomKey);
 				randomSalt.processU8(randomKey, 8);
+				if (XYO::Cryptography::SystemRandom::generate(randomKey, sizeof(randomKey))) {
+					randomSalt.processU8(randomKey, sizeof(randomKey));
+				};
 				randomSalt.processDone();
 				randomSalt.toU8(randomKey);
 
@@ -1125,7 +1187,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		RSA *rsa = nullptr;
 		BIO *bio = BIO_new_mem_buf(const_cast<uint8_t *>(publicKey), publicKeySize);
 		if (bio != nullptr) {
-			rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, nullptr, nullptr);
+			rsa = PEM_read_bio_RSA_PUBKEY(bio, &rsa, pemNoPassword, nullptr);
 			BIO_free_all(bio);
 			if (rsa != nullptr) {
 				size_t rsaSize = RSA_size(rsa);
@@ -1134,6 +1196,7 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 					return false;
 				};
 				if (dataSize < rsaSize + 64 + 64 + 8) {
+					RSA_free((RSA *)rsa);
 					return false;
 				};
 
@@ -1163,8 +1226,9 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		XYO::System::Buffer fileContents;
 		if (Shell::fileGetContents(fileNameIn, fileContents)) {
 			XYO::System::Buffer output;
-			privateEncrypt(privateKey, privateKeySize, fileContents.buffer, fileContents.length, output);
-			return Shell::filePutContents(fileNameOut, output);
+			if (privateEncrypt(privateKey, privateKeySize, fileContents.buffer, fileContents.length, output)) {
+				return Shell::filePutContents(fileNameOut, output);
+			};
 		};
 		return false;
 	};
@@ -1184,8 +1248,9 @@ namespace XYO::QuantumScript::Extension::OpenSSL {
 		XYO::System::Buffer fileContents;
 		if (Shell::fileGetContents(fileNameIn, fileContents)) {
 			XYO::System::Buffer output;
-			publicEncrypt(publicKey, publicKeySize, fileContents.buffer, fileContents.length, output);
-			return Shell::filePutContents(fileNameOut, output);
+			if (publicEncrypt(publicKey, publicKeySize, fileContents.buffer, fileContents.length, output)) {
+				return Shell::filePutContents(fileNameOut, output);
+			};
 		};
 		return false;
 	};
