@@ -1,6 +1,5 @@
 {
 	"solution": {
-		"namespace" : "xyo",
 		"name" : "quantum-script--openssl",
 		"type" : "xyo-cpp",
 		"projects": [
